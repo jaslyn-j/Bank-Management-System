@@ -10,7 +10,7 @@ public class Session {
     private Branch   selectedBranch;
     private Customer loggedInCustomer;
     private Manager   loggedInManager;
-    private String   userMode; // "CUSTOMER" or "ADMIN"
+    private String   userMode;
 
     private Session() {}
 
@@ -28,7 +28,7 @@ public class Session {
 
     public void setSelectedBranch(Branch branch)        { this.selectedBranch = branch; }
     public void setLoggedInCustomer(Customer customer)  { this.loggedInCustomer = customer; }
-    public void setLoggedInAdmin(Manager manager)           { this.loggedInManager = manager; }
+    public void setLoggedInManager(Manager manager)           { this.loggedInManager = manager; }
     public void setUserMode(String userMode)            { this.userMode = userMode; }
 
     // Call this on logout to wipe session data
