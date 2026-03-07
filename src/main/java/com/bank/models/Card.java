@@ -11,9 +11,7 @@ public class Card {
     private String cvvHash;
     private LocalDate expiryDate;
     private String status;
-    private LocalDateTime appliedAt;
     private Integer approvedBy;
-    private LocalDateTime approvedAt;
 
     public Card() {}
 
@@ -24,9 +22,7 @@ public class Card {
     public String        getCvvHash()     { return cvvHash; }
     public LocalDate     getExpiryDate()  { return expiryDate; }
     public String        getStatus()      { return status; }
-    public LocalDateTime getAppliedAt()   { return appliedAt; }
     public Integer       getApprovedBy()  { return approvedBy; }
-    public LocalDateTime getApprovedAt()  { return approvedAt; }
 
     public void setCardId(int cardId)               { this.cardId = cardId; }
     public void setAccountId(int accountId)         { this.accountId = accountId; }
@@ -35,7 +31,5 @@ public class Card {
     public void setCvvHash(String cvvHash)          { this.cvvHash = cvvHash; }
     public void setExpiryDate(LocalDate expiryDate) { this.expiryDate = expiryDate; }
     public void setStatus(String status)            { this.status = status; }
-    public void setAppliedAt(LocalDateTime appliedAt)   { this.appliedAt = appliedAt; }
     public void setApprovedBy(Integer approvedBy)       { this.approvedBy = approvedBy; }
-    public void setApprovedAt(LocalDateTime approvedAt) { this.approvedAt = approvedAt; }
 }

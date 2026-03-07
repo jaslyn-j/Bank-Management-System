@@ -178,10 +178,6 @@ public class CardDAO {
             card.setApprovedBy(approvedBy);
         }
 
-        Timestamp approvedAt = rs.getTimestamp("approved_at");
-        if (approvedAt != null) {
-            card.setApprovedAt(approvedAt.toLocalDateTime());
-        }
 
         return card;
     }

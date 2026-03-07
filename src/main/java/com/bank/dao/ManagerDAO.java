@@ -37,7 +37,7 @@ public class ManagerDAO {
 
     // Retrieve all managers belonging to a specific branch
     public List<Manager> getManagersByBranch(int branchId) {
-        List<Manager> admins = new ArrayList<>();
+        List<Manager> managers = new ArrayList<>();
         String sql = "SELECT * FROM Admin WHERE branch_id = ?";
 
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
@@ -45,14 +45,14 @@ public class ManagerDAO {
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
-                admins.add(mapResultSetToManager(rs));
+                managers.add(mapResultSetToManager(rs));
             }
 
         } catch (SQLException e) {
             System.err.println("Error fetching admins by branch: " + e.getMessage());
         }
 
-        return admins;
+        return managers;
     }
 
     // Insert a new admin

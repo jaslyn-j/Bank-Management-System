@@ -1,7 +1,6 @@
 package com.bank.models;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 public class Customer{
     private int customerId;
@@ -15,7 +14,6 @@ public class Customer{
     private String address;
     private String passwordHash;
     private String status;
-    private LocalDateTime createdAt;
 
     public Customer() {}
 
@@ -32,7 +30,6 @@ public class Customer{
     public String        getAddress()      { return address; }
     public String        getPasswordHash() { return passwordHash; }
     public String        getStatus()       { return status; }
-    public LocalDateTime getCreatedAt()    { return createdAt; }
 
     // Setters
     public void setCustomerId(int customerId)           { this.customerId = customerId; }
@@ -46,5 +43,4 @@ public class Customer{
     public void setAddress(String address)              { this.address = address; }
     public void setPasswordHash(String passwordHash)    { this.passwordHash = passwordHash; }
     public void setStatus(String status)                { this.status = status; }
-    public void setCreatedAt(LocalDateTime createdAt)   { this.createdAt = createdAt; }
 }

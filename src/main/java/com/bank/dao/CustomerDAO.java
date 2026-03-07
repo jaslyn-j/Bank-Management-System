@@ -152,11 +152,6 @@ public class CustomerDAO {
             customer.setDateOfBirth(dob.toLocalDate());
         }
 
-        Timestamp createdAt = rs.getTimestamp("created_at");
-        if (createdAt != null) {
-            customer.setCreatedAt(createdAt.toLocalDateTime());
-        }
-
         return customer;
     }
 }

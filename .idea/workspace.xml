@@ -4,17 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="69c61452-0990-42fc-aee5-45096c15c5ad" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/bank/dao/FraudAlertDAO.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/bank/models/FraudAlert.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/bank/models/FraudRule.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/bank/services/AccountService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/bank/services/AuthService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/bank/services/FraudDetectionService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/bank/services/TransactionService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/bank/db/Session.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/bank/db/Session.java" afterDir="false" />
-    </list>
+    <list default="true" id="69c61452-0990-42fc-aee5-45096c15c5ad" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />

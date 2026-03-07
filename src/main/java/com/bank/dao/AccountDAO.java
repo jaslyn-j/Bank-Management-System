@@ -229,20 +229,12 @@ public class AccountDAO {
         account.setBalance(rs.getBigDecimal("balance"));
         account.setStatus(rs.getString("status"));
 
-        Timestamp createdAt = rs.getTimestamp("created_at");
-        if (createdAt != null) {
-            account.setCreatedAt(createdAt.toLocalDateTime());
-        }
 
         int approvedBy = rs.getInt("approved_by");
         if (!rs.wasNull()) {
             account.setApprovedBy(approvedBy);
         }
 
-        Timestamp approvedAt = rs.getTimestamp("approved_at");
-        if (approvedAt != null) {
-            account.setApprovedAt(approvedAt.toLocalDateTime());
-        }
 
         return account;
     }
