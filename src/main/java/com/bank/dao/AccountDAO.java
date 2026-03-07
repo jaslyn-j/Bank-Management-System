@@ -75,23 +75,15 @@ public class AccountDAO {
         return accounts;
     }
 
-    // Retrieve a single account by account number
-    public Account getAccountByNumber(String accountNumber) {
-        String sql = "SELECT * FROM Account WHERE account_number = ?";
-
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setString(1, accountNumber);
-            ResultSet rs = stmt.executeQuery();
-
-            if (rs.next()) {
-                return mapResultSetToAccount(rs);
-            }
-
-        } catch (SQLException e) {
-            System.err.println("Error fetching account by number: " + e.getMessage());
+    public Account getAccountByFormattedNumber(String formattedNumber) {
+        try {
+            // Strip the "ACC" prefix and parse the integer
+            int accountId = Integer.parseInt(formattedNumber.replace("ACC", "").trim());
+            return getAccountById(accountId);
+        } catch (NumberFormatException e) {
+            System.err.println("Invalid formatted account number: " + formattedNumber);
+            return null;
         }
-
-        return null;
     }
 
     // Retrieve a single account by its ID
@@ -115,14 +107,13 @@ public class AccountDAO {
 
     // Insert a new account creation request (starts as pending)
     public boolean createAccount(Account account) {
-        String sql = "INSERT INTO Account (customer_id, branch_id, account_number, " +
-                "account_type, balance, status) VALUES (?, ?, ?, ?, 0.00, 'pending')";
+        String sql = "INSERT INTO Account (customer_id, branch_id, " +
+                "account_type, balance, status) VALUES (?, ?, ?, 0.00, 'pending')";
 
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, account.getCustomerId());
             stmt.setInt(2, account.getBranchId());
-            stmt.setString(3, account.getAccountNumber());
-            stmt.setString(4, account.getAccountType());
+            stmt.setString(3, account.getAccountType());
 
             return stmt.executeUpdate() > 0;
 
@@ -134,12 +125,12 @@ public class AccountDAO {
     }
 
     // Approve an account — admin sets status to active
-    public boolean approveAccount(int accountId, int adminId) {
+    public boolean approveAccount(int accountId, int managerId) {
         String sql = "UPDATE Account SET status = 'active', approved_by = ?, " +
-                "approved_at = CURRENT_TIMESTAMP WHERE account_id = ?";
+                "WHERE account_id = ?";
 
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setInt(1, adminId);
+            stmt.setInt(1, managerId);
             stmt.setInt(2, accountId);
 
             return stmt.executeUpdate() > 0;
@@ -152,12 +143,12 @@ public class AccountDAO {
     }
 
     // Decline an account request — admin sets status to closed
-    public boolean declineAccount(int accountId, int adminId) {
+    public boolean declineAccount(int accountId, int managerId) {
         String sql = "UPDATE Account SET status = 'closed', approved_by = ?, " +
-                "approved_at = CURRENT_TIMESTAMP WHERE account_id = ?";
+                "WHERE account_id = ?";
 
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setInt(1, adminId);
+            stmt.setInt(1, managerId);
             stmt.setInt(2, accountId);
 
             return stmt.executeUpdate() > 0;
@@ -224,7 +215,6 @@ public class AccountDAO {
         account.setAccountId(rs.getInt("account_id"));
         account.setCustomerId(rs.getInt("customer_id"));
         account.setBranchId(rs.getInt("branch_id"));
-        account.setAccountNumber(rs.getString("account_number"));
         account.setAccountType(rs.getString("account_type"));
         account.setBalance(rs.getBigDecimal("balance"));
         account.setStatus(rs.getString("status"));

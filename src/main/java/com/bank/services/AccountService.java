@@ -20,7 +20,6 @@ public class AccountService {
         account.setCustomerId(customerId);
         account.setBranchId(branchId);
         account.setAccountType(accountType);
-        account.setAccountNumber(generateAccountNumber());
         return accountDAO.createAccount(account);
     }
 
@@ -47,13 +46,13 @@ public class AccountService {
     }
 
     // Admin approves an account creation request
-    public boolean approveAccount(int accountId, int adminId) {
-        return accountDAO.approveAccount(accountId, adminId);
+    public boolean approveAccount(int accountId, int managerId) {
+        return accountDAO.approveAccount(accountId, managerId);
     }
 
     // Admin declines an account creation request
-    public boolean declineAccount(int accountId, int adminId) {
-        return accountDAO.declineAccount(accountId, adminId);
+    public boolean declineAccount(int accountId, int managerId) {
+        return accountDAO.declineAccount(accountId, managerId);
     }
 
     // Admin blocks an account
@@ -71,9 +70,8 @@ public class AccountService {
         return accountDAO.deleteAccount(accountId);
     }
 
-    // Look up an account by its account number (used in fund transfers)
-    public Account findAccountByNumber(String accountNumber) {
-        return accountDAO.getAccountByNumber(accountNumber);
+    public String formatAccountNumber(int accountId) {
+        return String.format("ACC%09d", accountId);
     }
 
     // Look up an account by its ID
@@ -81,10 +79,4 @@ public class AccountService {
         return accountDAO.getAccountById(accountId);
     }
 
-    // Generates a unique 12-digit account number
-    private String generateAccountNumber() {
-        long number = Math.abs(UUID.randomUUID().getMostSignificantBits() % 900000000000L)
-                + 100000000000L;
-        return String.valueOf(number);
-    }
 }

@@ -29,7 +29,7 @@ public class ManagerDAO {
             }
 
         } catch (SQLException e) {
-            System.err.println("Error fetching admin by username: " + e.getMessage());
+            System.err.println("Error fetching manager by username: " + e.getMessage());
         }
 
         return null;
@@ -38,7 +38,7 @@ public class ManagerDAO {
     // Retrieve all managers belonging to a specific branch
     public List<Manager> getManagersByBranch(int branchId) {
         List<Manager> managers = new ArrayList<>();
-        String sql = "SELECT * FROM Admin WHERE branch_id = ?";
+        String sql = "SELECT * FROM Manager WHERE branch_id = ?";
 
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, branchId);
@@ -49,7 +49,7 @@ public class ManagerDAO {
             }
 
         } catch (SQLException e) {
-            System.err.println("Error fetching admins by branch: " + e.getMessage());
+            System.err.println("Error fetching managers by branch: " + e.getMessage());
         }
 
         return managers;
@@ -84,10 +84,6 @@ public class ManagerDAO {
         manager.setUsername(rs.getString("username"));
         manager.setPasswordHash(rs.getString("password_hash"));
 
-        Timestamp createdAt = rs.getTimestamp("created_at");
-        if (createdAt != null) {
-            manager.setCreatedAt(createdAt.toLocalDateTime());
-        }
 
         return manager;
     }

@@ -107,8 +107,8 @@ public class FraudDetectionService {
     }
 
     // Admin reviews and updates an alert
-    public boolean reviewAlert(int alertId, String status, int adminId) {
-        return fraudAlertDAO.updateAlertStatus(alertId, status, adminId);
+    public boolean reviewAlert(int alertId, String status, int managerId) {
+        return fraudAlertDAO.updateAlertStatus(alertId, status, managerId);
     }
 
     // Retrieve all open alerts for admin dashboard

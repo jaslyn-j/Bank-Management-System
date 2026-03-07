@@ -159,7 +159,6 @@ public class TransactionService {
             outgoing.setTransactionType("transfer_out");
             outgoing.setAmount(amount);
             outgoing.setBalanceAfter(newFromBalance);
-            outgoing.setDescription("Transfer to account " + toAccount.getAccountNumber());
             transactionDAO.addTransaction(outgoing);
 
             // Record the incoming transaction for the receiver
@@ -168,7 +167,6 @@ public class TransactionService {
             incoming.setTransactionType("transfer_in");
             incoming.setAmount(amount);
             incoming.setBalanceAfter(newToBalance);
-            incoming.setDescription("Transfer from account " + fromAccount.getAccountNumber());
             transactionDAO.addTransaction(incoming);
 
             // Record the transfer itself

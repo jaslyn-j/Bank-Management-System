@@ -101,12 +101,12 @@ public class CardDAO {
     }
 
     // Approve a card application
-    public boolean approveCard(int cardId, int adminId) {
+    public boolean approveCard(int cardId, int managerId) {
         String sql = "UPDATE Card SET status = 'active', approved_by = ?, " +
-                "approved_at = CURRENT_TIMESTAMP WHERE card_id = ?";
+                "WHERE card_id = ?";
 
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setInt(1, adminId);
+            stmt.setInt(1, managerId);
             stmt.setInt(2, cardId);
 
             return stmt.executeUpdate() > 0;
@@ -119,12 +119,12 @@ public class CardDAO {
     }
 
     // Decline a card application
-    public boolean declineCard(int cardId, int adminId) {
+    public boolean declineCard(int cardId, int managerId) {
         String sql = "UPDATE Card SET status = 'cancelled', approved_by = ?, " +
-                "approved_at = CURRENT_TIMESTAMP WHERE card_id = ?";
+                "WHERE card_id = ?";
 
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setInt(1, adminId);
+            stmt.setInt(1, managerId);
             stmt.setInt(2, cardId);
 
             return stmt.executeUpdate() > 0;
@@ -166,11 +166,6 @@ public class CardDAO {
         Date expiryDate = rs.getDate("expiry_date");
         if (expiryDate != null) {
             card.setExpiryDate(expiryDate.toLocalDate());
-        }
-
-        Timestamp appliedAt = rs.getTimestamp("applied_at");
-        if (appliedAt != null) {
-            card.setAppliedAt(appliedAt.toLocalDateTime());
         }
 
         int approvedBy = rs.getInt("approved_by");

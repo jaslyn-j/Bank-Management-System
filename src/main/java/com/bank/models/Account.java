@@ -6,7 +6,6 @@ public class Account {
     private int accountId;
     private int customerId;
     private int branchId;
-    private String accountNumber;
     private String accountType;
     private BigDecimal balance;
     private String status;
@@ -17,7 +16,6 @@ public class Account {
     public int           getAccountId()     { return accountId; }
     public int           getCustomerId()    { return customerId; }
     public int           getBranchId()      { return branchId; }
-    public String        getAccountNumber() { return accountNumber; }
     public String        getAccountType()   { return accountType; }
     public BigDecimal    getBalance()       { return balance; }
     public String        getStatus()        { return status; }
@@ -26,7 +24,6 @@ public class Account {
     public void setAccountId(int accountId)             { this.accountId = accountId; }
     public void setCustomerId(int customerId)           { this.customerId = customerId; }
     public void setBranchId(int branchId)               { this.branchId = branchId; }
-    public void setAccountNumber(String accountNumber)  { this.accountNumber = accountNumber; }
     public void setAccountType(String accountType)      { this.accountType = accountType; }
     public void setBalance(BigDecimal balance)          { this.balance = balance; }
     public void setStatus(String status)                { this.status = status; }

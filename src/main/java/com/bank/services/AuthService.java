@@ -38,7 +38,8 @@ public class AuthService {
     }
 
     // Authenticate an admin login attempt
-    public boolean loginAdmin(String username, String plainPassword, int branchId) {
+    public boolean loginManager(String username, String plainPassword, int branchId) {
+
         Manager manager = managerDAO.getManagerByUsername(username, branchId);
 
         if (manager== null) {

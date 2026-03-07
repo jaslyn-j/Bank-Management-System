@@ -42,13 +42,13 @@ public class CardService {
     }
 
     // Admin approves a card application
-    public boolean approveCard(int cardId, int adminId) {
-        return cardDAO.approveCard(cardId, adminId);
+    public boolean approveCard(int cardId, int managerId) {
+        return cardDAO.approveCard(cardId, managerId);
     }
 
     // Admin declines a card application
-    public boolean declineCard(int cardId, int adminId) {
-        return cardDAO.declineCard(cardId, adminId);
+    public boolean declineCard(int cardId, int managerId) {
+        return cardDAO.declineCard(cardId, managerId);
     }
 
     // Admin or system blocks a card

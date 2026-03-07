@@ -107,13 +107,13 @@ public class FraudAlertDAO {
     }
 
     // Admin marks an alert as reviewed or dismissed
-    public boolean updateAlertStatus(int alertId, String status, int adminId) {
+    public boolean updateAlertStatus(int alertId, String status, int managerId) {
         String sql = "UPDATE FraudAlert SET status = ?, reviewed_by = ?, " +
                 "reviewed_at = CURRENT_TIMESTAMP WHERE alert_id = ?";
 
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, status);
-            stmt.setInt(2, adminId);
+            stmt.setInt(2, managerId);
             stmt.setInt(3, alertId);
 
             return stmt.executeUpdate() > 0;
