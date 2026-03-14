@@ -124,6 +124,9 @@ public class FraudDetectionService {
         return fraudAlertDAO.getOpenAlertCount(branchId);
     }
 
+    public int dismissAllReviewedAlerts(int branchId) {
+        return ProcedureService.dismissReviewedAlerts(branchId);
+    }
     private void logAlert(int accountId, Integer transactionId,
                           String reason, String severity) {
         FraudAlert alert = new FraudAlert();
@@ -134,4 +137,5 @@ public class FraudDetectionService {
         alert.setStatus("open");
         fraudAlertDAO.addAlert(alert);
     }
+
 }

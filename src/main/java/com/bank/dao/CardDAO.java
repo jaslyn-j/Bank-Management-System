@@ -81,8 +81,7 @@ public class CardDAO {
 
     // Insert a new card application
     public boolean applyForCard(Card card) {
-        String sql = "INSERT INTO Card (account_id, card_type, card_number, cvv_hash, " +
-                "expiry_date, status) VALUES (?, ?, ?, ?, ?, 'pending')";
+        String sql = "INSERT INTO Card (account_id, card_type, card_number, cvv_hash, expiry_date, status) VALUES (?, ?, ?, ?, ?, 'pending')";
 
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, card.getAccountId());
@@ -102,8 +101,7 @@ public class CardDAO {
 
     // Approve a card application
     public boolean approveCard(int cardId, int managerId) {
-        String sql = "UPDATE Card SET status = 'active', approved_by = ?, " +
-                "WHERE card_id = ?";
+        String sql = "UPDATE Card SET status = 'active', approved_by = ? WHERE card_id = ?";
 
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, managerId);
@@ -120,8 +118,7 @@ public class CardDAO {
 
     // Decline a card application
     public boolean declineCard(int cardId, int managerId) {
-        String sql = "UPDATE Card SET status = 'cancelled', approved_by = ?, " +
-                "WHERE card_id = ?";
+        String sql = "UPDATE Card SET status = 'cancelled', approved_by = ? WHERE card_id = ?";
 
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, managerId);

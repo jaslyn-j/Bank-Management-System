@@ -1,5 +1,6 @@
 package com.bank.dao;
 
+import com.bank.models.TransactionSummary;
 import com.bank.db.DBConnection;
 import com.bank.models.Transaction;
 
@@ -17,7 +18,7 @@ public class TransactionDAO {
     // Retrieve all transactions for a specific account
     public List<Transaction> getTransactionsByAccount(int accountId) {
         List<Transaction> transactions = new ArrayList<>();
-        String sql = "SELECT * FROM Transaction WHERE account_id = ? ORDER BY timestamp DESC";
+        String sql = "SELECT * FROM Transaction WHERE account_id = ? ORDER BY time_stamp DESC";
 
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, accountId);
@@ -65,11 +66,46 @@ public class TransactionDAO {
         transaction.setBalanceAfter(rs.getBigDecimal("balance_after"));
         transaction.setDescription(rs.getString("description"));
 
-        Timestamp timestamp = rs.getTimestamp("timestamp");
+        Timestamp timestamp = rs.getTimestamp("time_stamp");
         if (timestamp != null) {
             transaction.setTimestamp(timestamp.toLocalDateTime());
         }
 
         return transaction;
+    }
+
+    // Retrieves a transaction summary for a specific account
+// Uses aggregate functions COUNT, SUM with CASE expressions
+// to break totals down by transaction type
+    public TransactionSummary getTransactionSummary(int accountId) {
+
+        String sql = "SELECT account_id, COUNT(*) AS total_transactions, " +
+                "SUM(CASE WHEN transaction_type = 'deposit' THEN amount ELSE 0 END) AS total_deposited, " +
+                "SUM(CASE WHEN transaction_type = 'withdrawal' THEN amount ELSE 0 END) AS total_withdrawn, " +
+                "SUM(CASE WHEN transaction_type = 'transfer_out' THEN amount ELSE 0 END) AS total_transferred_out, " +
+                "SUM(CASE WHEN transaction_type = 'transfer_in' THEN amount ELSE 0 END) AS total_transferred_in " +
+                "FROM Transaction WHERE account_id = ? GROUP BY account_id";
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, accountId);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                TransactionSummary summary = new TransactionSummary();
+                summary.setAccountId(rs.getInt("account_id"));
+                summary.setTotalTransactions(rs.getInt("total_transactions"));
+                summary.setTotalDeposited(rs.getBigDecimal("total_deposited"));
+                summary.setTotalWithdrawn(rs.getBigDecimal("total_withdrawn"));
+                summary.setTotalTransferredOut(rs.getBigDecimal("total_transferred_out"));
+                summary.setTotalTransferredIn(rs.getBigDecimal("total_transferred_in"));
+                return summary;
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Error fetching transaction summary: "
+                    + e.getMessage());
+        }
+
+        return null;
     }
 }

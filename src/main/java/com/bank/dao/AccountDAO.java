@@ -2,6 +2,7 @@ package com.bank.dao;
 
 import com.bank.db.DBConnection;
 import com.bank.models.Account;
+import com.bank.models.CustomerFinancialSummary;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -126,8 +127,7 @@ public class AccountDAO {
 
     // Approve an account — admin sets status to active
     public boolean approveAccount(int accountId, int managerId) {
-        String sql = "UPDATE Account SET status = 'active', approved_by = ?, " +
-                "WHERE account_id = ?";
+        String sql = "UPDATE Account SET status = 'active', approved_by = ? WHERE account_id = ?";
 
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, managerId);
@@ -144,8 +144,7 @@ public class AccountDAO {
 
     // Decline an account request — admin sets status to closed
     public boolean declineAccount(int accountId, int managerId) {
-        String sql = "UPDATE Account SET status = 'closed', approved_by = ?, " +
-                "WHERE account_id = ?";
+        String sql = "UPDATE Account SET status = 'closed', approved_by = ? WHERE account_id = ?";
 
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, managerId);
@@ -227,5 +226,43 @@ public class AccountDAO {
 
 
         return account;
+    }
+
+    // Retrieves financial summary for all customers at a branch
+// Uses aggregate functions COUNT, SUM, AVG, MAX, MIN
+// with a multi-table JOIN across Customer and Account
+    public List<CustomerFinancialSummary> getCustomerFinancialSummary(int branchId) {
+        List<CustomerFinancialSummary> summaries = new ArrayList<>();
+
+        String sql = "SELECT c.customer_id, c.first_name, c.last_name, " +
+                "COUNT(a.account_id)  AS total_accounts, SUM(a.balance) AS total_balance, AVG(a.balance) AS average_balance, " +
+                "MAX(a.balance) AS highest_balance, MIN(a.balance) AS lowest_balance " +
+                "FROM Customer c INNER JOIN Account a ON c.customer_id = a.customer_id WHERE c.branch_id = ? " +
+                "AND a.status = 'active' " +
+                "GROUP BY c.customer_id, c.first_name, c.last_name";
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, branchId);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                CustomerFinancialSummary summary = new CustomerFinancialSummary();
+                summary.setCustomerId(rs.getInt("customer_id"));
+                summary.setFirstName(rs.getString("first_name"));
+                summary.setLastName(rs.getString("last_name"));
+                summary.setTotalAccounts(rs.getInt("total_accounts"));
+                summary.setTotalBalance(rs.getBigDecimal("total_balance"));
+                summary.setAverageBalance(rs.getBigDecimal("average_balance"));
+                summary.setHighestBalance(rs.getBigDecimal("highest_balance"));
+                summary.setLowestBalance(rs.getBigDecimal("lowest_balance"));
+                summaries.add(summary);
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Error fetching customer financial summary: "
+                    + e.getMessage());
+        }
+
+        return summaries;
     }
 }

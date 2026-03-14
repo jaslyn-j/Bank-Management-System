@@ -7,6 +7,7 @@ import com.bank.db.DBConnection;
 import com.bank.models.Account;
 import com.bank.models.Transaction;
 import com.bank.models.Transfer;
+import com.bank.models.TransactionSummary;
 
 import java.math.BigDecimal;
 import java.sql.Connection;
@@ -204,5 +205,9 @@ public class TransactionService {
     // Retrieve transaction history for an account
     public List<Transaction> getTransactionHistory(int accountId) {
         return transactionDAO.getTransactionsByAccount(accountId);
+    }
+
+    public TransactionSummary getTransactionSummary(int accountId) {
+        return transactionDAO.getTransactionSummary(accountId);
     }
 }

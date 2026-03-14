@@ -1,7 +1,11 @@
 package com.bank.services;
 
 import com.bank.dao.AccountDAO;
+import com.bank.dao.ApprovalDAO;
 import com.bank.models.Account;
+import com.bank.models.CustomerFinancialSummary;
+import java.util.List;
+import com.bank.models.PendingApproval;
 
 import java.util.List;
 import java.util.UUID;
@@ -9,6 +13,7 @@ import java.util.UUID;
 public class AccountService {
 
     private AccountDAO accountDAO;
+    private ApprovalDAO approvalDAO;
 
     public AccountService() {
         this.accountDAO = new AccountDAO();
@@ -79,4 +84,16 @@ public class AccountService {
         return accountDAO.getAccountById(accountId);
     }
 
+    // Get financial summary for all customers at a branch
+    public List<CustomerFinancialSummary> getCustomerFinancialSummary(int branchId) {
+        return accountDAO.getCustomerFinancialSummary(branchId);
+    }
+
+    // Add this new method — does not replace getPendingAccountsForBranch()
+    // it is an additional method that returns richer data
+    public List<PendingApproval> getPendingApprovalRequests(int branchId) {
+        return approvalDAO.getPendingAccountRequestsForBranch(branchId);
+    }
+
 }
+

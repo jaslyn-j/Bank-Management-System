@@ -65,12 +65,11 @@ public class TransferDAO {
             stmt.setBigDecimal(3, transfer.getAmount());
             stmt.setString(4, transfer.getStatus());
 
-            return stmt.executeUpdate() > 0;
+            stmt.executeUpdate();
 
         } catch (SQLException e) {
             System.err.println("Error adding transfer: " + e.getMessage());
         }
-
         return false;
     }
 

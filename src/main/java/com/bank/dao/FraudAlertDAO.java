@@ -45,8 +45,7 @@ public class FraudAlertDAO {
         List<FraudAlert> alerts = new ArrayList<>();
         String sql = "SELECT fa.* FROM FraudAlert fa " +
                 "JOIN Account a ON fa.account_id = a.account_id " +
-                "WHERE a.branch_id = ? AND fa.status = 'open' " +
-                "ORDER BY fa.flagged_at DESC";
+                "WHERE a.branch_id = ? AND fa.status = 'open'";
 
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, branchId);
@@ -68,7 +67,7 @@ public class FraudAlertDAO {
         List<FraudAlert> alerts = new ArrayList<>();
         String sql = "SELECT fa.* FROM FraudAlert fa " +
                 "JOIN Account a ON fa.account_id = a.account_id " +
-                "WHERE a.branch_id = ? ORDER BY fa.flagged_at DESC";
+                "WHERE a.branch_id = ?";
 
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, branchId);
@@ -88,8 +87,7 @@ public class FraudAlertDAO {
     // Retrieve all alerts for a specific account
     public List<FraudAlert> getAlertsByAccount(int accountId) {
         List<FraudAlert> alerts = new ArrayList<>();
-        String sql = "SELECT * FROM FraudAlert WHERE account_id = ? " +
-                "ORDER BY flagged_at DESC";
+        String sql = "SELECT * FROM FraudAlert WHERE account_id = ?";
 
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, accountId);
@@ -177,7 +175,7 @@ public class FraudAlertDAO {
     public int countRecentTransactions(int accountId, int withinMinutes) {
         String sql = "SELECT COUNT(*) FROM Transaction " +
                 "WHERE account_id = ? " +
-                "AND timestamp >= NOW() - INTERVAL ? MINUTE";
+                "AND time_stamp >= NOW() - INTERVAL ? MINUTE";
 
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, accountId);
@@ -218,7 +216,7 @@ public class FraudAlertDAO {
     // Calculate total amount transacted today for an account
     public java.math.BigDecimal getDailyTransactionTotal(int accountId) {
         String sql = "SELECT COALESCE(SUM(amount), 0) FROM Transaction " +
-                "WHERE account_id = ? AND DATE(timestamp) = CURDATE() " +
+                "WHERE account_id = ? AND DATE(time_stamp) = CURDATE() " +
                 "AND transaction_type IN ('withdrawal', 'transfer_out')";
 
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
@@ -246,9 +244,6 @@ public class FraudAlertDAO {
 
         int transactionId = rs.getInt("transaction_id");
         if (!rs.wasNull()) alert.setTransactionId(transactionId);
-
-        Timestamp flaggedAt = rs.getTimestamp("flagged_at");
-        if (flaggedAt != null) alert.setFlaggedAt(flaggedAt.toLocalDateTime());
 
         int reviewedBy = rs.getInt("reviewed_by");
         if (!rs.wasNull()) alert.setReviewedBy(reviewedBy);
