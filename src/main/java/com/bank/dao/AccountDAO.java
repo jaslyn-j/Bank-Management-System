@@ -208,6 +208,33 @@ public class AccountDAO {
         return false;
     }
 
+    public List<Account> getDormantAccounts(int branchId) {
+        List<Account> results = new ArrayList<>();
+        String sql =
+                "SELECT * FROM Account " +
+                        "WHERE branch_id = ? " +
+                        "AND status = 'active' " +
+                        "AND account_id NOT IN ( " +
+                        "    SELECT DISTINCT account_id " +
+                        "    FROM Transaction " +
+                        ")";
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, branchId);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                results.add(mapResultSetToAccount(rs));
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Error fetching dormant accounts: "
+                    + e.getMessage());
+        }
+
+        return results;
+    }
+
     // Maps a ResultSet row to an Account object
     private Account mapResultSetToAccount(ResultSet rs) throws SQLException {
         Account account = new Account();

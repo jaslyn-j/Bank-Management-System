@@ -95,5 +95,28 @@ public class AccountService {
         return approvalDAO.getPendingAccountRequestsForBranch(branchId);
     }
 
+    public List<Account> getDormantAccounts(int branchId) {
+        return accountDAO.getDormantAccounts(branchId);
+    }
+
+    // Accepts a formatted string like "ACC000000007"
+// Parses it back to the raw account_id
+// and returns the matching account
+    public Account findAccountByFormattedNumber(
+            String formattedNumber) {
+        try {
+            int id = Integer.parseInt(
+                    formattedNumber
+                            .replace("ACC", "")
+                            .trim());
+            return accountDAO.getAccountById(id);
+        } catch (NumberFormatException e) {
+            System.err.println(
+                    "Invalid account number format: "
+                            + formattedNumber);
+            return null;
+        }
+    }
+
 }
 

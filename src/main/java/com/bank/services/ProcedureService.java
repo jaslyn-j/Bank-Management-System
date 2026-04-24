@@ -119,7 +119,7 @@ public class ProcedureService {
                 "INNER JOIN Account a ON t.account_id = a.account_id " +
                 "WHERE a.branch_id = ? " +
                 "AND t.description = 'Monthly interest applied' " +
-                "AND DATE(t.timestamp) = CURDATE()";
+                "AND DATE(t.time_stamp) = CURDATE()";
 
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, branchId);

@@ -36,24 +36,60 @@ public class TransactionDAO {
     }
 
     // Insert a single transaction record
-    public boolean addTransaction(Transaction transaction) {
-        String sql = "INSERT INTO Transaction (account_id, transaction_type, amount, " +
-                "balance_after, description) VALUES (?, ?, ?, ?, ?)";
+    // Change return type from boolean to int
+// Returns the generated transaction_id
+// Returns -1 if insert failed
+    public int addTransaction(
+            Transaction transaction) {
+        String sql =
+                "INSERT INTO Transaction ("
+                        + "account_id, "
+                        + "transaction_type, "
+                        + "amount, "
+                        + "balance_after, "
+                        + "description, "
+                        + "time_stamp"
+                        + ") VALUES ("
+                        + "?, ?, ?, ?, ?, NOW())";
 
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setInt(1, transaction.getAccountId());
-            stmt.setString(2, transaction.getTransactionType());
-            stmt.setBigDecimal(3, transaction.getAmount());
-            stmt.setBigDecimal(4, transaction.getBalanceAfter());
+        try (PreparedStatement stmt =connection.prepareStatement(sql,
+                                     // This tells JDBC to return the auto generated key after the insert
+                                     PreparedStatement.RETURN_GENERATED_KEYS)) {
+
+            stmt.setInt(1,transaction.getAccountId());
+            stmt.setString(2,transaction.getTransactionType());
+            stmt.setBigDecimal(3,transaction.getAmount());
+            stmt.setBigDecimal(4,transaction.getBalanceAfter());
             stmt.setString(5, transaction.getDescription());
 
-            return stmt.executeUpdate() > 0;
+            int rowsAffected =stmt.executeUpdate();
+
+            if (rowsAffected > 0) {
+                // Get the auto generated transaction_id immediately from the same statement on the same connection
+                ResultSet generatedKeys =stmt.getGeneratedKeys();
+                if (generatedKeys.next()) {
+                    int generatedId =generatedKeys.getInt(1);
+                    // Also set it on the transaction object so the caller can access it directly
+                    transaction.setTransactionId(generatedId);
+                    return generatedId;
+                }
+            }
 
         } catch (SQLException e) {
-            System.err.println("Error adding transaction: " + e.getMessage());
+            System.err.println("Error adding transaction: "+ e.getMessage());
         }
+        return -1;
+    }
 
-        return false;
+    public int getLastInsertedId() {
+        String sql = "SELECT LAST_INSERT_ID()";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) return rs.getInt(1);
+        } catch (SQLException e) {
+            System.err.println("Error fetching last insert ID: " + e.getMessage());
+        }
+        return -1;
     }
 
     // Maps a ResultSet row to a Transaction object
@@ -72,6 +108,37 @@ public class TransactionDAO {
         }
 
         return transaction;
+    }
+    public List<Transaction> getAllTransferTransactions(int accountId) {
+        List<Transaction> results = new ArrayList<>();
+        String sql =
+                "SELECT * FROM Transaction " +
+                        "WHERE account_id = ? " +
+                        "AND transaction_type = 'transfer_out' " +
+
+                        "UNION " +
+
+                        "SELECT * FROM Transaction " +
+                        "WHERE account_id = ? " +
+                        "AND transaction_type = 'transfer_in' " +
+
+                        "ORDER BY time_stamp DESC";
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, accountId);
+            stmt.setInt(2, accountId);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                results.add(mapResultSetToTransaction(rs));
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Error fetching transfer transactions: "
+                    + e.getMessage());
+        }
+
+        return results;
     }
 
     // Retrieves a transaction summary for a specific account

@@ -7,6 +7,8 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.sql.DriverManager.getConnection;
+
 public class FraudAlertDAO {
     private Connection connection;
 
@@ -16,8 +18,8 @@ public class FraudAlertDAO {
 
     // Insert a new fraud alert record
     public boolean addAlert(FraudAlert alert) {
-        String sql = "INSERT INTO FraudAlert (account_id, transaction_id, alert_reason, severity) " +
-                "VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO FraudAlert (account_id, transaction_id, alert_reason, severity, status, time_stamp) " +
+                "VALUES (?, ?, ?, ?, ?, NOW())";
 
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, alert.getAccountId());
@@ -30,6 +32,7 @@ public class FraudAlertDAO {
 
             stmt.setString(3, alert.getAlertReason());
             stmt.setString(4, alert.getSeverity());
+            stmt.setString(5, alert.getStatus());
 
             return stmt.executeUpdate() > 0;
 
@@ -234,6 +237,38 @@ public class FraudAlertDAO {
         return java.math.BigDecimal.ZERO;
     }
 
+    public List<FraudAlert> getActiveAlerts(int branchId) {
+        List<FraudAlert> results = new ArrayList<>();
+        String sql =
+                "SELECT fa.* FROM FraudAlert fa " +
+                        "INNER JOIN Account a ON fa.account_id = a.account_id " +
+                        "WHERE a.branch_id = ? " +
+                        "AND fa.status = 'open' " +
+
+                        "UNION " +
+
+                        "SELECT fa.* FROM FraudAlert fa " +
+                        "INNER JOIN Account a ON fa.account_id = a.account_id " +
+                        "WHERE a.branch_id = ? " +
+                        "AND fa.status = 'reviewed' ";
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, branchId);
+            stmt.setInt(2, branchId);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                results.add(mapResultSetToAlert(rs));
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Error fetching active alerts: "
+                    + e.getMessage());
+        }
+
+        return results;
+    }
+
     private FraudAlert mapResultSetToAlert(ResultSet rs) throws SQLException {
         FraudAlert alert = new FraudAlert();
         alert.setAlertId(rs.getInt("alert_id"));
@@ -241,7 +276,12 @@ public class FraudAlertDAO {
         alert.setAlertReason(rs.getString("alert_reason"));
         alert.setSeverity(rs.getString("severity"));
         alert.setStatus(rs.getString("status"));
-
+        java.sql.Timestamp flaggedAt =
+                rs.getTimestamp("time_stamp");
+        if (flaggedAt != null) {
+            alert.setFlaggedAt(
+                    flaggedAt.toLocalDateTime());
+        }
         int transactionId = rs.getInt("transaction_id");
         if (!rs.wasNull()) alert.setTransactionId(transactionId);
 
@@ -252,5 +292,41 @@ public class FraudAlertDAO {
         if (reviewedAt != null) alert.setReviewedAt(reviewedAt.toLocalDateTime());
 
         return alert;
+    }
+    // Returns account IDs that have open
+// fraud alerts but are not blocked
+// Uses EXCEPT set operation
+    public List<Integer>
+    getUnblockedAccountsWithAlerts(
+            int branchId) {
+        List<Integer> accountIds =
+                new ArrayList<>();
+
+        String sql =
+                "SELECT DISTINCT fa.account_id "
+                        + "FROM FraudAlert fa "
+                        + "INNER JOIN Account a "
+                        + "ON fa.account_id = a.account_id "
+                        + "WHERE a.branch_id = ? "
+                        + "AND fa.status = 'open' "
+                        + "AND a.status != 'blocked'";
+
+        try (PreparedStatement stmt =
+                     connection.prepareStatement(sql)) {
+            stmt.setInt(1, branchId);
+            ResultSet rs =
+                    stmt.executeQuery();
+            while (rs.next()) {
+                accountIds.add(
+                        rs.getInt(
+                                "account_id"));
+            }
+        } catch (SQLException e) {
+            System.err.println(
+                    "Error getting unblocked "
+                            + "accounts with alerts: "
+                            + e.getMessage());
+        }
+        return accountIds;
     }
 }

@@ -17,7 +17,7 @@ public class TransferDAO {
     // Retrieve all transfers where the account was the sender
     public List<Transfer> getTransfersSent(int accountId) {
         List<Transfer> transfers = new ArrayList<>();
-        String sql = "SELECT * FROM Transfer WHERE from_account_id = ? ORDER BY timestamp DESC";
+        String sql = "SELECT * FROM Transfer WHERE from_account_id = ? ORDER BY time_stamp DESC";
 
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, accountId);
@@ -37,7 +37,7 @@ public class TransferDAO {
     // Retrieve all transfers where the account was the receiver
     public List<Transfer> getTransfersReceived(int accountId) {
         List<Transfer> transfers = new ArrayList<>();
-        String sql = "SELECT * FROM Transfer WHERE to_account_id = ? ORDER BY timestamp DESC";
+        String sql = "SELECT * FROM Transfer WHERE to_account_id = ? ORDER BY time_stamp DESC";
 
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, accountId);
@@ -82,7 +82,7 @@ public class TransferDAO {
         transfer.setAmount(rs.getBigDecimal("amount"));
         transfer.setStatus(rs.getString("status"));
 
-        Timestamp timestamp = rs.getTimestamp("timestamp");
+        Timestamp timestamp = rs.getTimestamp("time_stamp");
         if (timestamp != null) {
             transfer.setTimestamp(timestamp.toLocalDateTime());
         }

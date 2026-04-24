@@ -21,193 +21,418 @@ public class TransactionService {
     private Connection     connection;
 
     public TransactionService() {
-        this.connection     = DBConnection.getInstance().getConnection();
-        this.accountDAO     = new AccountDAO();
-        this.transactionDAO = new TransactionDAO();
-        this.transferDAO    = new TransferDAO();
+        this.connection     =
+                DBConnection.getInstance()
+                        .getConnection();
+        this.accountDAO     =
+                new AccountDAO();
+        this.transactionDAO =
+                new TransactionDAO();
+        this.transferDAO    =
+                new TransferDAO();
     }
 
-    // Deposit an amount into an account
-    public boolean deposit(int accountId, BigDecimal amount, String description) {
+    // -------------------------------------------------------
+    // DEPOSIT
+    // -------------------------------------------------------
+    public boolean deposit(
+            int accountId,
+            BigDecimal amount,
+            String description) {
 
-        if (amount.compareTo(BigDecimal.ZERO) <= 0) {
-            System.err.println("Deposit amount must be greater than zero.");
+        if (amount.compareTo(
+                BigDecimal.ZERO) <= 0) {
+            System.err.println(
+                    "Deposit amount must be "
+                            + "greater than zero.");
             return false;
         }
 
-        Account account = accountDAO.getAccountById(accountId);
+        Account account =
+                accountDAO.getAccountById(
+                        accountId);
 
         if (account == null) {
-            System.err.println("Account not found.");
+            System.err.println(
+                    "Account not found.");
             return false;
         }
 
-        if (!account.getStatus().equals("active")) {
-            System.err.println("Account is not active.");
+        if (!account.getStatus()
+                .equals("active")) {
+            System.err.println(
+                    "Account is not active.");
             return false;
         }
 
-        BigDecimal newBalance = account.getBalance().add(amount);
+        // --- FRAUD CHECK ---
+        // analyzeOnly() checks all rules
+        // but does NOT log any alerts
+        // Alerts are logged once below
+        // after the transaction is saved
+        FraudDetectionService fraudService =
+                new FraudDetectionService();
+        FraudDetectionService.FraudCheckResult
+                fraudResult =
+                fraudService.analyzeOnly(
+                        accountId,
+                        account.getBranchId(),
+                        amount,
+                        "deposit");
 
-        // Update the balance
-        boolean balanceUpdated = accountDAO.updateBalance(accountId, newBalance);
+        if (fraudResult.blocked) {
+            // Blocked — no transaction saved
+            // log alerts with NULL tx_id
+            fraudService.logTriggeredAlerts(
+                    accountId,
+                    null,
+                    fraudResult);
+            System.err.println(
+                    "Deposit blocked by "
+                            + "fraud detection.");
+            return false;
+        }
+        // -------------------
+
+        BigDecimal newBalance =
+                account.getBalance()
+                        .add(amount);
+
+        boolean balanceUpdated =
+                accountDAO.updateBalance(
+                        accountId, newBalance);
         if (!balanceUpdated) return false;
 
-        // Record the transaction
-        Transaction transaction = new Transaction();
+        Transaction transaction =
+                new Transaction();
         transaction.setAccountId(accountId);
-        transaction.setTransactionType("deposit");
+        transaction.setTransactionType(
+                "deposit");
         transaction.setAmount(amount);
-        transaction.setBalanceAfter(newBalance);
-        transaction.setDescription(description != null ? description : "Deposit");
+        transaction.setBalanceAfter(
+                newBalance);
+        transaction.setDescription(
+                description != null
+                        ? description : "Deposit");
 
-        return transactionDAO.addTransaction(transaction);
+        int txId =transactionDAO.addTransaction(transaction);
+
+        if (txId == -1) return false;
+
+        // Log fraud alerts with the real transaction_id from the same insert
+        if (fraudResult.isFlagged()) {
+            fraudService.logTriggeredAlerts(
+                    accountId,
+                    txId,
+                    fraudResult);
+        }
+
+        return true;
     }
 
-    // Withdraw an amount from an account
-    public boolean withdraw(int accountId, BigDecimal amount, String description) {
+    // -------------------------------------------------------
+    // WITHDRAW
+    // -------------------------------------------------------
+    public boolean withdraw(
+            int accountId,
+            BigDecimal amount,
+            String description) {
 
-        if (amount.compareTo(BigDecimal.ZERO) <= 0) {
-            System.err.println("Withdrawal amount must be greater than zero.");
+        if (amount.compareTo(
+                BigDecimal.ZERO) <= 0) {
+            System.err.println(
+                    "Withdrawal amount must "
+                            + "be greater than zero.");
             return false;
         }
 
-        Account account = accountDAO.getAccountById(accountId);
+        Account account =
+                accountDAO.getAccountById(
+                        accountId);
 
         if (account == null) {
-            System.err.println("Account not found.");
+            System.err.println(
+                    "Account not found.");
             return false;
         }
 
-        if (!account.getStatus().equals("active")) {
-            System.err.println("Account is not active.");
+        if (!account.getStatus()
+                .equals("active")) {
+            System.err.println(
+                    "Account is not active.");
             return false;
         }
 
-        if (account.getBalance().compareTo(amount) < 0) {
-            System.err.println("Insufficient funds.");
+        if (account.getBalance()
+                .compareTo(amount) < 0) {
+            System.err.println(
+                    "Insufficient funds.");
             return false;
         }
 
-        BigDecimal newBalance = account.getBalance().subtract(amount);
+        // --- FRAUD CHECK ---
+        // analyzeOnly() — no alerts logged
+        FraudDetectionService fraudService =
+                new FraudDetectionService();
+        FraudDetectionService.FraudCheckResult
+                fraudResult =
+                fraudService.analyzeOnly(
+                        accountId,
+                        account.getBranchId(),
+                        amount,
+                        "withdrawal");
 
-        boolean balanceUpdated = accountDAO.updateBalance(accountId, newBalance);
+        if (fraudResult.blocked) {
+            // Blocked — log with NULL tx_id
+            fraudService.logTriggeredAlerts(
+                    accountId,
+                    null,
+                    fraudResult);
+            System.err.println(
+                    "Withdrawal blocked by "
+                            + "fraud detection.");
+            return false;
+        }
+        // -------------------
+
+        BigDecimal newBalance =
+                account.getBalance()
+                        .subtract(amount);
+
+        boolean balanceUpdated =
+                accountDAO.updateBalance(
+                        accountId, newBalance);
         if (!balanceUpdated) return false;
 
-        Transaction transaction = new Transaction();
+        Transaction transaction =
+                new Transaction();
         transaction.setAccountId(accountId);
-        transaction.setTransactionType("withdrawal");
+        transaction.setTransactionType(
+                "withdrawal");
         transaction.setAmount(amount);
-        transaction.setBalanceAfter(newBalance);
-        transaction.setDescription(description != null ? description : "Withdrawal");
+        transaction.setBalanceAfter(
+                newBalance);
+        transaction.setDescription(
+                description != null
+                        ? description
+                        : "Withdrawal");
 
-        return transactionDAO.addTransaction(transaction);
+        int txId =transactionDAO.addTransaction(transaction);
+
+        if (txId == -1) return false;
+
+        if (fraudResult.isFlagged()) {
+            fraudService.logTriggeredAlerts(
+                    accountId,
+                    txId,
+                    fraudResult);
+        }
+
+        return true;
     }
 
-    // Transfer funds between two accounts
-    // Uses a SQL transaction so both sides either fully complete or fully roll back
-    public boolean transfer(int fromAccountId, int toAccountId, BigDecimal amount) {
+    // -------------------------------------------------------
+    // TRANSFER
+    // -------------------------------------------------------
+    public boolean transfer(
+            int fromAccountId,
+            int toAccountId,
+            BigDecimal amount) {
 
         if (fromAccountId == toAccountId) {
-            System.err.println("Cannot transfer to the same account.");
+            System.err.println(
+                    "Cannot transfer to "
+                            + "the same account.");
             return false;
         }
 
-        if (amount.compareTo(BigDecimal.ZERO) <= 0) {
-            System.err.println("Transfer amount must be greater than zero.");
+        if (amount.compareTo(
+                BigDecimal.ZERO) <= 0) {
+            System.err.println(
+                    "Transfer amount must be "
+                            + "greater than zero.");
             return false;
         }
 
-        Account fromAccount = accountDAO.getAccountById(fromAccountId);
-        Account toAccount   = accountDAO.getAccountById(toAccountId);
+        Account fromAccount =
+                accountDAO.getAccountById(
+                        fromAccountId);
+        Account toAccount =
+                accountDAO.getAccountById(
+                        toAccountId);
 
-        if (fromAccount == null || toAccount == null) {
-            System.err.println("One or both accounts not found.");
+        if (fromAccount == null
+                || toAccount == null) {
+            System.err.println(
+                    "One or both accounts "
+                            + "not found.");
             return false;
         }
 
-        if (!fromAccount.getStatus().equals("active")) {
-            System.err.println("Source account is not active.");
+        if (!fromAccount.getStatus()
+                .equals("active")) {
+            System.err.println(
+                    "Source account is "
+                            + "not active.");
             return false;
         }
 
-        if (!toAccount.getStatus().equals("active")) {
-            System.err.println("Destination account is not active.");
+        if (!toAccount.getStatus()
+                .equals("active")) {
+            System.err.println(
+                    "Destination account is "
+                            + "not active.");
             return false;
         }
 
-        if (fromAccount.getBalance().compareTo(amount) < 0) {
-            System.err.println("Insufficient funds.");
+        if (fromAccount.getBalance()
+                .compareTo(amount) < 0) {
+            System.err.println(
+                    "Insufficient funds.");
             return false;
         }
 
-        // Begin SQL transaction — all or nothing
+        // --- FRAUD CHECK ---
+        // analyzeOnly() — no alerts logged
+        FraudDetectionService fraudService =
+                new FraudDetectionService();
+        FraudDetectionService.FraudCheckResult
+                fraudResult =
+                fraudService.analyzeOnly(
+                        fromAccountId,
+                        fromAccount.getBranchId(),
+                        amount,
+                        "transfer_out");
+
+        if (fraudResult.blocked) {
+            // Blocked — log with NULL tx_id
+            fraudService.logTriggeredAlerts(
+                    fromAccountId,
+                    null,
+                    fraudResult);
+            System.err.println(
+                    "Transfer blocked by "
+                            + "fraud detection.");
+            return false;
+        }
+        // -------------------
+
         try {
             connection.setAutoCommit(false);
 
-            BigDecimal newFromBalance = fromAccount.getBalance().subtract(amount);
-            BigDecimal newToBalance   = toAccount.getBalance().add(amount);
+            BigDecimal newFromBalance =
+                    fromAccount.getBalance()
+                            .subtract(amount);
+            BigDecimal newToBalance =
+                    toAccount.getBalance()
+                            .add(amount);
 
-            // Debit the sender
-            accountDAO.updateBalance(fromAccountId, newFromBalance);
+            accountDAO.updateBalance(
+                    fromAccountId,
+                    newFromBalance);
+            accountDAO.updateBalance(
+                    toAccountId,
+                    newToBalance);
 
-            // Credit the receiver
-            accountDAO.updateBalance(toAccountId, newToBalance);
-
-            // Record the outgoing transaction for the sender
-            Transaction outgoing = new Transaction();
-            outgoing.setAccountId(fromAccountId);
-            outgoing.setTransactionType("transfer_out");
+            Transaction outgoing =
+                    new Transaction();
+            outgoing.setAccountId(
+                    fromAccountId);
+            outgoing.setTransactionType(
+                    "transfer_out");
             outgoing.setAmount(amount);
-            outgoing.setBalanceAfter(newFromBalance);
-            transactionDAO.addTransaction(outgoing);
+            outgoing.setBalanceAfter(
+                    newFromBalance);
+            int outgoingTxId =
+                    transactionDAO
+                            .addTransaction(outgoing);
 
-            // Record the incoming transaction for the receiver
-            Transaction incoming = new Transaction();
-            incoming.setAccountId(toAccountId);
-            incoming.setTransactionType("transfer_in");
+            // Log fraud alerts with the real
+            // outgoing transaction_id
+            if (fraudResult.isFlagged()
+                    && outgoingTxId != -1) {
+                fraudService.logTriggeredAlerts(
+                        fromAccountId,
+                        outgoingTxId,
+                        fraudResult);
+            }
+            // -----------------------------
+
+            Transaction incoming =
+                    new Transaction();
+            incoming.setAccountId(
+                    toAccountId);
+            incoming.setTransactionType(
+                    "transfer_in");
             incoming.setAmount(amount);
-            incoming.setBalanceAfter(newToBalance);
-            transactionDAO.addTransaction(incoming);
+            incoming.setBalanceAfter(
+                    newToBalance);
+            transactionDAO.addTransaction(
+                    incoming);
 
-            // Record the transfer itself
             Transfer transfer = new Transfer();
-            transfer.setFromAccountId(fromAccountId);
-            transfer.setToAccountId(toAccountId);
+            transfer.setFromAccountId(
+                    fromAccountId);
+            transfer.setToAccountId(
+                    toAccountId);
             transfer.setAmount(amount);
             transfer.setStatus("completed");
             transferDAO.addTransfer(transfer);
 
-            // Commit everything
             connection.commit();
             return true;
 
         } catch (Exception e) {
-            // If anything fails, roll back all changes
             try {
                 connection.rollback();
-                System.err.println("Transfer failed and was rolled back: " + e.getMessage());
+                System.err.println(
+                        "Transfer failed and was "
+                                + "rolled back: "
+                                + e.getMessage());
             } catch (Exception rollbackEx) {
-                System.err.println("Rollback failed: " + rollbackEx.getMessage());
+                System.err.println(
+                        "Rollback failed: "
+                                + rollbackEx.getMessage());
             }
             return false;
 
         } finally {
-            // Always restore auto-commit after a manual transaction
             try {
-                connection.setAutoCommit(true);
+                connection.setAutoCommit(
+                        true);
             } catch (Exception e) {
-                System.err.println("Failed to restore auto-commit: " + e.getMessage());
+                System.err.println(
+                        "Failed to restore "
+                                + "auto-commit: "
+                                + e.getMessage());
             }
         }
     }
 
-    // Retrieve transaction history for an account
-    public List<Transaction> getTransactionHistory(int accountId) {
-        return transactionDAO.getTransactionsByAccount(accountId);
+    // -------------------------------------------------------
+    // READ METHODS — unchanged
+    // -------------------------------------------------------
+    public List<Transaction>
+    getTransactionHistory(
+            int accountId) {
+        return transactionDAO
+                .getTransactionsByAccount(
+                        accountId);
     }
 
-    public TransactionSummary getTransactionSummary(int accountId) {
-        return transactionDAO.getTransactionSummary(accountId);
+    public TransactionSummary
+    getTransactionSummary(
+            int accountId) {
+        return transactionDAO
+                .getTransactionSummary(
+                        accountId);
+    }
+
+    public List<Transaction>
+    getAllTransferTransactions(
+            int accountId) {
+        return transactionDAO
+                .getAllTransferTransactions(
+                        accountId);
     }
 }

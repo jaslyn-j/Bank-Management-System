@@ -75,29 +75,56 @@ public class CustomerDAO {
     }
 
     // Insert a new customer during registration
-    public boolean registerCustomer(Customer customer) {
-        String sql = "INSERT INTO Customer (branch_id, first_name, last_name, email, phone, " +
-                "national_id, date_of_birth, address, password_hash, status) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'active')";
+    public boolean registerCustomer(
+            Customer customer) {
+        String sql =
+                "INSERT INTO Customer ("
+                        + "branch_id, first_name, last_name, "
+                        + "email, phone, national_id, "
+                        + "date_of_birth, street, city, "
+                        + "state, pin_code, password_hash, "
+                        + "status) "
+                        + "VALUES (?, ?, ?, ?, ?, ?, "
+                        + "?, ?, ?, ?, ?, ?, 'active')";
 
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setInt(1, customer.getBranchId());
-            stmt.setString(2, customer.getFirstName());
-            stmt.setString(3, customer.getLastName());
-            stmt.setString(4, customer.getEmail());
-            stmt.setString(5, customer.getPhone());
-            stmt.setString(6, customer.getNationalId());
-            stmt.setDate(7, customer.getDateOfBirth() != null
-                    ? Date.valueOf(customer.getDateOfBirth()) : null);
-            stmt.setString(8, customer.getAddress());
-            stmt.setString(9, customer.getPasswordHash());
+        try (PreparedStatement stmt =
+                     connection.prepareStatement(sql)) {
+            stmt.setInt(1,
+                    customer.getBranchId());
+            stmt.setString(2,
+                    customer.getFirstName());
+            stmt.setString(3,
+                    customer.getLastName());
+            stmt.setString(4,
+                    customer.getEmail());
+            stmt.setString(5,
+                    customer.getPhone());
+            stmt.setString(6,
+                    customer.getNationalId());
+            stmt.setDate(7,
+                    customer.getDateOfBirth()
+                            != null
+                            ? java.sql.Date.valueOf(
+                            customer.getDateOfBirth())
+                            : null);
+            stmt.setString(8,
+                    customer.getStreet());
+            stmt.setString(9,
+                    customer.getCity());
+            stmt.setString(10,
+                    customer.getState());
+            stmt.setString(11,
+                    customer.getPinCode());
+            stmt.setString(12,
+                    customer.getPasswordHash());
 
             return stmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            System.err.println("Error registering customer: " + e.getMessage());
+            System.err.println(
+                    "Error registering customer: "
+                            + e.getMessage());
         }
-
         return false;
     }
 
@@ -134,22 +161,43 @@ public class CustomerDAO {
     }
 
     // Maps a ResultSet row to a Customer object
-    private Customer mapResultSetToCustomer(ResultSet rs) throws SQLException {
+    private Customer mapResultSetToCustomer(
+            ResultSet rs) throws SQLException {
         Customer customer = new Customer();
-        customer.setCustomerId(rs.getInt("customer_id"));
-        customer.setBranchId(rs.getInt("branch_id"));
-        customer.setFirstName(rs.getString("first_name"));
-        customer.setLastName(rs.getString("last_name"));
-        customer.setEmail(rs.getString("email"));
-        customer.setPhone(rs.getString("phone"));
-        customer.setNationalId(rs.getString("national_id"));
-        customer.setAddress(rs.getString("address"));
-        customer.setPasswordHash(rs.getString("password_hash"));
-        customer.setStatus(rs.getString("status"));
+        customer.setCustomerId(
+                rs.getInt("customer_id"));
+        customer.setBranchId(
+                rs.getInt("branch_id"));
+        customer.setFirstName(
+                rs.getString("first_name"));
+        customer.setLastName(
+                rs.getString("last_name"));
+        customer.setEmail(
+                rs.getString("email"));
+        customer.setPhone(
+                rs.getString("phone"));
+        customer.setNationalId(
+                rs.getString("national_id"));
+        customer.setPasswordHash(
+                rs.getString("password_hash"));
+        customer.setStatus(
+                rs.getString("status"));
 
-        Date dob = rs.getDate("date_of_birth");
+        // New address fields
+        customer.setStreet(
+                rs.getString("street"));
+        customer.setCity(
+                rs.getString("city"));
+        customer.setState(
+                rs.getString("state"));
+        customer.setPinCode(
+                rs.getString("pin_code"));
+
+        java.sql.Date dob =
+                rs.getDate("date_of_birth");
         if (dob != null) {
-            customer.setDateOfBirth(dob.toLocalDate());
+            customer.setDateOfBirth(
+                    dob.toLocalDate());
         }
 
         return customer;
