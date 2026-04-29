@@ -15,11 +15,8 @@ public class BranchActivityDAO {
         this.connection = DBConnection.getInstance().getConnection();
     }
 
-    // Retrieve activity summary for a specific branch
-    // Returns a single BranchActivity object with all statistics
     public BranchActivity getBranchActivity(int branchId) {
-        String sql = "SELECT * FROM vw_branch_activity " +
-                "WHERE branch_id = ?";
+        String sql = "SELECT * FROM vw_branch_activity WHERE branch_id = ?";
 
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, branchId);
@@ -37,12 +34,9 @@ public class BranchActivityDAO {
         return null;
     }
 
-    // Retrieve activity summary for all branches
-    // Useful if a super admin view is ever added
     public List<BranchActivity> getAllBranchActivity() {
         List<BranchActivity> results = new ArrayList<>();
-        String sql = "SELECT * FROM vw_branch_activity " +
-                "ORDER BY branch_name ASC";
+        String sql = "SELECT * FROM vw_branch_activity ORDER BY branch_name ASC";
 
         try (PreparedStatement stmt = connection.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
@@ -59,14 +53,10 @@ public class BranchActivityDAO {
         return results;
     }
 
-    // Retrieve only branches that have pending items
-    // or open fraud alerts requiring attention
     public List<BranchActivity> getBranchesRequiringAttention() {
         List<BranchActivity> results = new ArrayList<>();
         String sql = "SELECT * FROM vw_branch_activity " +
-                "WHERE pending_accounts > 0 " +
-                "OR pending_cards > 0 " +
-                "OR open_fraud_alerts > 0 " +
+                "WHERE pending_accounts > 0 OR pending_cards > 0 OR open_fraud_alerts > 0 " +
                 "ORDER BY open_fraud_alerts DESC";
 
         try (PreparedStatement stmt = connection.prepareStatement(sql);
@@ -84,13 +74,8 @@ public class BranchActivityDAO {
         return results;
     }
 
-    // Get only the pending counts for a branch
-    // Lightweight query used for notification badges
     public int getTotalPendingItems(int branchId) {
-        String sql = "SELECT pending_accounts + pending_cards " +
-                "AS total_pending " +
-                "FROM vw_branch_activity " +
-                "WHERE branch_id = ?";
+        String sql = "SELECT pending_accounts + pending_cards AS total_pending FROM vw_branch_activity WHERE branch_id = ?";
 
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, branchId);
@@ -108,12 +93,8 @@ public class BranchActivityDAO {
         return 0;
     }
 
-    // Get only the open fraud alert count for a branch
-    // Lightweight query used for fraud alert badge
     public int getOpenFraudAlertCount(int branchId) {
-        String sql = "SELECT open_fraud_alerts " +
-                "FROM vw_branch_activity " +
-                "WHERE branch_id = ?";
+        String sql = "SELECT open_fraud_alerts FROM vw_branch_activity WHERE branch_id = ?";
 
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, branchId);
@@ -131,7 +112,6 @@ public class BranchActivityDAO {
         return 0;
     }
 
-    // Maps a ResultSet row to a BranchActivity object
     private BranchActivity mapResultSet(ResultSet rs)
             throws SQLException {
 

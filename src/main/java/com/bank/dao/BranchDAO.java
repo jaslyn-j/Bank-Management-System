@@ -14,7 +14,6 @@ public class BranchDAO {
         this.connection = DBConnection.getInstance().getConnection();
     }
 
-    // Retrieve all branches (used to populate the branch selection screen)
     public List<Branch> getAllBranches() {
         List<Branch> branches = new ArrayList<>();
         String sql = "SELECT * FROM Branch";
@@ -40,7 +39,6 @@ public class BranchDAO {
         return branches;
     }
 
-    // Retrieve a single branch by its ID
     public Branch getBranchById(int branchId) {
         String sql = "SELECT * FROM Branch WHERE branch_id = ?";
 
@@ -66,7 +64,6 @@ public class BranchDAO {
         return null;
     }
 
-    // Insert a new branch
     public boolean addBranch(Branch branch) {
         String sql = "INSERT INTO Branch (branch_name, branch_code, address, phone, email) " +
                 "VALUES (?, ?, ?, ?, ?)";

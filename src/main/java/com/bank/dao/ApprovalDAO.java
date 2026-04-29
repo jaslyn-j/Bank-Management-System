@@ -15,17 +15,11 @@ public class ApprovalDAO {
         this.connection = DBConnection.getInstance().getConnection();
     }
 
-    // Retrieves all pending account and card requests
-    // for a branch in one unified list using UNION ALL.
-    // The first SELECT gets pending account requests,
-    // the second SELECT gets pending card requests,
-    // UNION ALL combines both result sets together.
     public List<PendingApproval> getPendingApprovalsForBranch(int branchId) {
         List<PendingApproval> approvals = new ArrayList<>();
 
         String sql =
-                "SELECT " +
-                        "'Account Request' AS request_type, " +
+                "SELECT 'Account Request' AS request_type, " +
                         "a.account_id AS request_id, " +
                         "CONCAT('ACC', LPAD(a.account_id, 9, '0')) AS reference, " +
                         "c.first_name, " +
@@ -54,7 +48,6 @@ public class ApprovalDAO {
                         "AND a.branch_id = ?";
 
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            // Two ? placeholders, one for each SELECT in the UNION
             stmt.setInt(1, branchId);
             stmt.setInt(2, branchId);
 
@@ -80,8 +73,6 @@ public class ApprovalDAO {
         return approvals;
     }
 
-    // Retrieves only pending account requests for a branch
-    // using just the first half of the UNION query
     public List<PendingApproval> getPendingAccountRequestsForBranch(int branchId) {
         List<PendingApproval> approvals = new ArrayList<>();
 
@@ -123,8 +114,6 @@ public class ApprovalDAO {
         return approvals;
     }
 
-    // Retrieves only pending card requests for a branch
-    // using just the second half of the UNION query
     public List<PendingApproval> getPendingCardRequestsForBranch(int branchId) {
         List<PendingApproval> approvals = new ArrayList<>();
 

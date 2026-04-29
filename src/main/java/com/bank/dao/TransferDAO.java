@@ -14,7 +14,6 @@ public class TransferDAO {
         this.connection = DBConnection.getInstance().getConnection();
     }
 
-    // Retrieve all transfers where the account was the sender
     public List<Transfer> getTransfersSent(int accountId) {
         List<Transfer> transfers = new ArrayList<>();
         String sql = "SELECT * FROM Transfer WHERE from_account_id = ? ORDER BY time_stamp DESC";
@@ -34,7 +33,6 @@ public class TransferDAO {
         return transfers;
     }
 
-    // Retrieve all transfers where the account was the receiver
     public List<Transfer> getTransfersReceived(int accountId) {
         List<Transfer> transfers = new ArrayList<>();
         String sql = "SELECT * FROM Transfer WHERE to_account_id = ? ORDER BY time_stamp DESC";
@@ -54,10 +52,8 @@ public class TransferDAO {
         return transfers;
     }
 
-    // Insert a transfer record — always called inside a transaction block from the service layer
     public boolean addTransfer(Transfer transfer) {
-        String sql = "INSERT INTO Transfer (from_account_id, to_account_id, amount, status) " +
-                "VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO Transfer (from_account_id, to_account_id, amount, status) VALUES (?, ?, ?, ?)";
 
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, transfer.getFromAccountId());
@@ -73,7 +69,6 @@ public class TransferDAO {
         return false;
     }
 
-    // Maps a ResultSet row to a Transfer object
     private Transfer mapResultSetToTransfer(ResultSet rs) throws SQLException {
         Transfer transfer = new Transfer();
         transfer.setTransferId(rs.getInt("transfer_id"));

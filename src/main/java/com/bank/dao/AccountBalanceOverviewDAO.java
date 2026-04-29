@@ -15,8 +15,6 @@ public class AccountBalanceOverviewDAO {
         this.connection = DBConnection.getInstance().getConnection();
     }
 
-    // Retrieve all active accounts for a branch
-    // with their balance category
     public List<AccountBalanceOverview> getBalanceOverviewByBranch(int branchId) {
         List<AccountBalanceOverview> results = new ArrayList<>();
         String sql = "SELECT * FROM vw_account_balance_overview " +
@@ -39,15 +37,12 @@ public class AccountBalanceOverviewDAO {
         return results;
     }
 
-    // Retrieve accounts filtered by a specific balance category
     public List<AccountBalanceOverview> getByBalanceCategory(
             int branchId, String category) {
 
         List<AccountBalanceOverview> results = new ArrayList<>();
         String sql = "SELECT * FROM vw_account_balance_overview " +
-                "WHERE branch_id = ? " +
-                "AND balance_category = ? " +
-                "ORDER BY balance DESC";
+                "WHERE branch_id = ? AND balance_category = ? ORDER BY balance DESC";
 
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, branchId);
@@ -66,15 +61,10 @@ public class AccountBalanceOverviewDAO {
         return results;
     }
 
-    // Count how many accounts fall into each balance category
-    // Returns counts for all five categories at once
     public List<Object[]> getBalanceCategoryCounts(int branchId) {
         List<Object[]> results = new ArrayList<>();
-        String sql = "SELECT balance_category, COUNT(*) AS total " +
-                "FROM vw_account_balance_overview " +
-                "WHERE branch_id = ? " +
-                "GROUP BY balance_category " +
-                "ORDER BY total DESC";
+        String sql = "SELECT balance_category, COUNT(*) AS total FROM vw_account_balance_overview WHERE branch_id = ? " +
+                "GROUP BY balance_category ORDER BY total DESC";
 
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, branchId);
@@ -95,7 +85,6 @@ public class AccountBalanceOverviewDAO {
         return results;
     }
 
-    // Get the balance overview for a specific account
     public AccountBalanceOverview getByAccountId(int accountId) {
         String sql = "SELECT * FROM vw_account_balance_overview " +
                 "WHERE account_id = ?";
@@ -116,7 +105,6 @@ public class AccountBalanceOverviewDAO {
         return null;
     }
 
-    // Maps a ResultSet row to an AccountBalanceOverview object
     private AccountBalanceOverview mapResultSet(ResultSet rs)
             throws SQLException {
 

@@ -15,25 +15,41 @@ public class AuthService {
         this.managerDAO    = new ManagerDAO();
     }
 
-    // Authenticate a customer login attempt
-    public boolean loginCustomer(String email, String plainPassword, int branchId) {
-        Customer customer = customerDAO.getCustomerByEmail(email, branchId);
+    public boolean loginCustomer(
+            int customerId,
+            String plainPassword,
+            int branchId) {
+
+        Customer customer =
+                customerDAO.getCustomerById(
+                        customerId, branchId);
 
         if (customer == null) {
+            System.err.println(
+                    "Customer not found.");
             return false;
         }
 
-        if (customer.getStatus().equals("blocked")) {
+        if (customer.getStatus()
+                .equals("blocked")) {
+            System.err.println(
+                    "Customer account blocked.");
             return false;
         }
 
-        if (!checkPassword(plainPassword, customer.getPasswordHash())) {
+        // Verify password against stored hash
+        if (!BCrypt.checkpw(
+                plainPassword,
+                customer.getPasswordHash())) {
+            System.err.println(
+                    "Invalid password.");
             return false;
         }
 
-        // Store the logged in customer in the session
-        Session.getInstance().setLoggedInCustomer(customer);
-        Session.getInstance().setUserMode("CUSTOMER");
+        Session.getInstance()
+                .setLoggedInCustomer(customer);
+        Session.getInstance()
+                .setUserMode("CUSTOMER");
         return true;
     }
 
@@ -68,10 +84,17 @@ public class AuthService {
     }
 
     // Register a new customer — hashes password before storing
-    public boolean registerCustomer(Customer customer, String plainPassword) {
-        String hashedPassword = BCrypt.hashpw(plainPassword, BCrypt.gensalt());
-        customer.setPasswordHash(hashedPassword);
-        return customerDAO.registerCustomer(customer);
+    public int registerCustomer(
+            Customer customer,
+            String plainPassword) {
+        String hashedPassword =
+                BCrypt.hashpw(
+                        plainPassword,
+                        BCrypt.gensalt());
+        customer.setPasswordHash(
+                hashedPassword);
+        return customerDAO
+                .registerCustomer(customer);
     }
 
     // Hash a plain text password

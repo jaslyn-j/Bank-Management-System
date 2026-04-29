@@ -7,7 +7,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
 
-public class DBConnection{
+public class  DBConnection{
     private static DBConnection instance;
     private Connection connection;
 
@@ -15,7 +15,6 @@ public class DBConnection{
     private final String username;
     private final String password;
 
-    // Private constructor — loads credentials from db.properties
     private DBConnection() {
         try (InputStream input = getClass()
                 .getClassLoader()

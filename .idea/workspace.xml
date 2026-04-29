@@ -5,37 +5,29 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="69c61452-0990-42fc-aee5-45096c15c5ad" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/bank/AppLauncher.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/bank/ui/AdminDashboard.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/bank/ui/BranchSelectionFrame.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/bank/ui/CustomerDashboard.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/bank/ui/LoginFrame.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/bank/ui/ModeSelectionFrame.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/bank/ui/RegisterFrame.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/bank/ui/panels/admin/AccountManagementPanel.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/bank/ui/panels/admin/BranchOverviewPanel.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/bank/ui/panels/admin/CardManagementPanel.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/bank/ui/panels/admin/CustomerManagementPanel.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/bank/ui/panels/admin/FraudAlertPanel.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/bank/ui/panels/customer/AccountPanel.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/bank/ui/panels/customer/CardPanel.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/bank/ui/panels/customer/TransactionPanel.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/bank/ui/panels/customer/TransferPanel.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/bank/ui/utils/UIConstants.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/bank/ui/utils/UIUtils.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dbnavigator.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dbnavigator.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/bank/Main.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/bank/AppLauncher.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/bank/AppLauncher.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/bank/dao/AccountBalanceOverviewDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/bank/dao/AccountBalanceOverviewDAO.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/bank/dao/AccountDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/bank/dao/AccountDAO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/bank/dao/ApprovalDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/bank/dao/ApprovalDAO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/bank/dao/BranchActivityDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/bank/dao/BranchActivityDAO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/bank/dao/BranchDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/bank/dao/BranchDAO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/bank/dao/CardDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/bank/dao/CardDAO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/bank/dao/CardExpiryStatusDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/bank/dao/CardExpiryStatusDAO.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/bank/dao/CustomerDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/bank/dao/CustomerDAO.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/bank/dao/FraudAlertDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/bank/dao/FraudAlertDAO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/bank/dao/ManagerDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/bank/dao/ManagerDAO.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/bank/dao/TransactionDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/bank/dao/TransactionDAO.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/bank/dao/TransferDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/bank/dao/TransferDAO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/bank/models/Customer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/bank/models/Customer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/bank/services/AccountService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/bank/services/AccountService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/bank/services/FraudDetectionService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/bank/services/FraudDetectionService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/bank/services/ProcedureService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/bank/services/ProcedureService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/bank/services/TransactionService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/bank/services/TransactionService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/bank/dao/ViewDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/bank/dao/ViewDAO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/bank/db/DBConnection.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/bank/db/DBConnection.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/bank/services/AuthService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/bank/services/AuthService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/bank/services/CustomerService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/bank/services/CustomerService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/bank/ui/AdminDashboard.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/bank/ui/AdminDashboard.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/bank/ui/CustomerDashboard.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/bank/ui/CustomerDashboard.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/bank/ui/LoginFrame.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/bank/ui/LoginFrame.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/bank/ui/ModeSelectionFrame.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/bank/ui/ModeSelectionFrame.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/bank/ui/RegisterFrame.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/bank/ui/RegisterFrame.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

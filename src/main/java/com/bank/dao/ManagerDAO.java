@@ -15,7 +15,6 @@ public class ManagerDAO {
         this.connection = DBConnection.getInstance().getConnection();
     }
 
-    // Find an admin by username and branch (used during login)
     public Manager getManagerByUsername(String username, int branchId) {
         String sql = "SELECT * FROM Manager WHERE username = ? AND branch_id = ?";
 
@@ -35,7 +34,6 @@ public class ManagerDAO {
         return null;
     }
 
-    // Retrieve all managers belonging to a specific branch
     public List<Manager> getManagersByBranch(int branchId) {
         List<Manager> managers = new ArrayList<>();
         String sql = "SELECT * FROM Manager WHERE branch_id = ?";
@@ -55,7 +53,6 @@ public class ManagerDAO {
         return managers;
     }
 
-    // Insert a new admin
     public boolean addManager(Manager manager) {
         String sql = "INSERT INTO Manager (branch_id, full_name, username, password_hash) " +
                 "VALUES (?, ?, ?, ?)";
@@ -75,7 +72,6 @@ public class ManagerDAO {
         return false;
     }
 
-    // Maps a ResultSet row to a Manager object
     private Manager mapResultSetToManager(ResultSet rs) throws SQLException {
         Manager manager = new Manager();
         manager.setManagerId(rs.getInt("manager_id"));

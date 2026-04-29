@@ -211,13 +211,8 @@ public class AccountDAO {
     public List<Account> getDormantAccounts(int branchId) {
         List<Account> results = new ArrayList<>();
         String sql =
-                "SELECT * FROM Account " +
-                        "WHERE branch_id = ? " +
-                        "AND status = 'active' " +
-                        "AND account_id NOT IN ( " +
-                        "    SELECT DISTINCT account_id " +
-                        "    FROM Transaction " +
-                        ")";
+                "SELECT * FROM Account WHERE branch_id = ? AND status = 'active' AND account_id NOT IN ( " +
+                        "SELECT DISTINCT account_id FROM Transaction)";
 
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, branchId);
@@ -235,7 +230,6 @@ public class AccountDAO {
         return results;
     }
 
-    // Maps a ResultSet row to an Account object
     private Account mapResultSetToAccount(ResultSet rs) throws SQLException {
         Account account = new Account();
         account.setAccountId(rs.getInt("account_id"));
@@ -255,9 +249,6 @@ public class AccountDAO {
         return account;
     }
 
-    // Retrieves financial summary for all customers at a branch
-// Uses aggregate functions COUNT, SUM, AVG, MAX, MIN
-// with a multi-table JOIN across Customer and Account
     public List<CustomerFinancialSummary> getCustomerFinancialSummary(int branchId) {
         List<CustomerFinancialSummary> summaries = new ArrayList<>();
 

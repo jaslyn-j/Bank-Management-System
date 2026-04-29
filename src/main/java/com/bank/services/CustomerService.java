@@ -19,8 +19,8 @@ public class CustomerService {
     }
 
     // Retrieve a single customer by their ID
-    public Customer getCustomerById(int customerId) {
-        return customerDAO.getCustomerById(customerId);
+    public Customer getCustomerById(int customerId, int branchId) {
+        return customerDAO.getCustomerById(customerId, branchId);
     }
 
     // Admin blocks a customer account

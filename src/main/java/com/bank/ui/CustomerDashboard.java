@@ -511,69 +511,42 @@ public class CustomerDashboard extends JFrame {
     // OVERVIEW PANEL
     // -------------------------------------------------------
     private JPanel createOverviewPanel() {
-        JPanel panel = new JPanel(
-                new BorderLayout());
-        panel.setBackground(
-                UIConstants.BACKGROUND);
-        panel.setBorder(
-                BorderFactory.createEmptyBorder(
-                        24, 24, 24, 24));
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setBackground( UIConstants.BACKGROUND);
+        panel.setBorder(BorderFactory.createEmptyBorder(24, 24, 24, 24));
 
         // Page title
-        JPanel titlePanel = new JPanel(
-                new BorderLayout());
+        JPanel titlePanel = new JPanel(new BorderLayout());
         titlePanel.setOpaque(false);
-        titlePanel.setBorder(
-                BorderFactory.createEmptyBorder(
-                        0, 0, 20, 0));
+        titlePanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 0));
 
-        JLabel titleLabel = new JLabel(
-                "Account Overview");
-        titleLabel.setFont(
-                UIConstants.FONT_TITLE);
-        titleLabel.setForeground(
-                UIConstants.PRIMARY);
-        titlePanel.add(titleLabel,
-                BorderLayout.WEST);
+        JLabel titleLabel = new JLabel("Account Overview");
+        titleLabel.setFont(UIConstants.FONT_TITLE);
+        titleLabel.setForeground(UIConstants.PRIMARY);
+        titlePanel.add(titleLabel,BorderLayout.WEST);
 
-        String branchName = Session.getInstance()
-                .getSelectedBranch()
-                .getBranchName();
-        JLabel branchLabel = new JLabel(
-                branchName);
-        branchLabel.setFont(new Font(
-                "Segoe UI", Font.PLAIN, 12));
-        branchLabel.setForeground(
-                UIConstants.TEXT_SECONDARY);
-        titlePanel.add(branchLabel,
-                BorderLayout.EAST);
+        String branchName = Session.getInstance().getSelectedBranch().getBranchName();
+        JLabel branchLabel = new JLabel(branchName);
+        branchLabel.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        branchLabel.setForeground( UIConstants.TEXT_SECONDARY);
+        titlePanel.add(branchLabel,BorderLayout.EAST);
 
-        panel.add(titlePanel,
-                BorderLayout.NORTH);
+        panel.add(titlePanel,BorderLayout.NORTH);
 
         // Summary cards row
-        JPanel cardsRow = new JPanel(
-                new GridLayout(1, 3, 16, 0));
+        JPanel cardsRow = new JPanel( new GridLayout(1, 3, 16, 0));
         cardsRow.setOpaque(false);
 
         // Get data
-        List<AccountBalanceOverview> overviews =
-                balanceOverviewService
-                        .getBalanceOverviewForCustomer(
-                                loggedInCustomer
-                                        .getCustomerId());
+        List<AccountBalanceOverview> overviews =balanceOverviewService.getBalanceOverviewForCustomer(loggedInCustomer.getCustomerId());
 
-        BigDecimal totalBalance =
-                BigDecimal.ZERO;
+        BigDecimal totalBalance =BigDecimal.ZERO;
         int totalAccounts = overviews.size();
         int activeAccounts = 0;
 
-        for (AccountBalanceOverview o
-                : overviews) {
+        for (AccountBalanceOverview o: overviews) {
             if (o.getBalance() != null) {
-                totalBalance =
-                        totalBalance.add(
-                                o.getBalance());
+                totalBalance =totalBalance.add(o.getBalance());
             }
             if ("active".equals(o.getStatus())) {
                 activeAccounts++;
@@ -581,113 +554,67 @@ public class CustomerDashboard extends JFrame {
         }
 
         // Card 1 — Total Balance
-        cardsRow.add(createSummaryCard(
-                "Total Balance",
-                "$" + String.format(
-                        "%.2f", totalBalance),
-                UIConstants.PRIMARY,
-                UIConstants.GOLD));
+        cardsRow.add(createSummaryCard("Total Balance","$" + String.format("%.2f", totalBalance),UIConstants.PRIMARY,UIConstants.GOLD));
 
         // Card 2 — Total Accounts
-        cardsRow.add(createSummaryCard(
-                "Total Accounts",
-                String.valueOf(totalAccounts),
-                UIConstants.SUCCESS,
-                UIConstants.SUCCESS_LIGHT));
+        cardsRow.add(createSummaryCard("Total Accounts",String.valueOf(totalAccounts),UIConstants.SUCCESS,UIConstants.PRIMARY_DARK));
 
         // Card 3 — Active Accounts
-        cardsRow.add(createSummaryCard(
-                "Active Accounts",
-                String.valueOf(activeAccounts),
-                UIConstants.INFO,
-                UIConstants.INFO_LIGHT));
+        cardsRow.add(createSummaryCard("Active Accounts", String.valueOf(activeAccounts),UIConstants.INFO,UIConstants.PRIMARY_DARK));
 
-        JPanel cardsWrapper = new JPanel(
-                new BorderLayout());
+        JPanel cardsWrapper = new JPanel(new BorderLayout());
         cardsWrapper.setOpaque(false);
-        cardsWrapper.setBorder(
-                BorderFactory.createEmptyBorder(
-                        0, 0, 20, 0));
-        cardsWrapper.add(cardsRow,
-                BorderLayout.CENTER);
+        cardsWrapper.setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 0));
+        cardsWrapper.add(cardsRow,BorderLayout.CENTER);
 
         // Center content
         JPanel centerContent = new JPanel();
-        centerContent.setLayout(new BoxLayout(
-                centerContent,
-                BoxLayout.Y_AXIS));
+        centerContent.setLayout(new BoxLayout(centerContent,BoxLayout.Y_AXIS));
         centerContent.setOpaque(false);
         centerContent.add(cardsWrapper);
 
         // Account balance overview table
-        JPanel tableSection = createCardPanel(
-                "Account Balance Overview");
-        tableSection.setLayout(
-                new BorderLayout());
-        tableSection.setBorder(
-                BorderFactory.createEmptyBorder(
-                        16, 16, 16, 16));
+        JPanel tableSection = createCardPanel("Account Balance Overview");
+        tableSection.setLayout(new BorderLayout());
+        tableSection.setBorder(BorderFactory.createEmptyBorder(16, 16, 16, 16));
 
-        String[] cols = {"Account Number",
-                "Account Type", "Balance",
-                "Status", "Category"};
-        DefaultTableModel model =
-                new DefaultTableModel(
-                        cols, 0) {
+        String[] cols = {"Account Number", "Account Type", "Balance","Status", "Category"};
+        DefaultTableModel model =new DefaultTableModel( cols, 0) {
                     @Override
-                    public boolean isCellEditable(
-                            int r, int c) {
+                    public boolean isCellEditable(int r, int c) {
                         return false;
                     }
                 };
 
-        for (AccountBalanceOverview o
-                : overviews) {
+        for (AccountBalanceOverview o : overviews) {
             model.addRow(new Object[]{
                     o.getAccountNumber(),
-                    o.getAccountType()
-                            .toUpperCase(),
-                    "$" + String.format(
-                            "%.2f", o.getBalance()),
-                    o.getStatus()
-                            .toUpperCase(),
+                    o.getAccountType().toUpperCase(),
+                    "$" + String.format("%.2f", o.getBalance()),o.getStatus() .toUpperCase(),
                     o.getBalanceCategory()
             });
         }
 
-        JTable overviewTable =
-                new JTable(model);
+        JTable overviewTable = new JTable(model);
         UIUtils.styleTable(overviewTable);
-        overviewTable.setSelectionMode(
-                ListSelectionModel
-                        .SINGLE_SELECTION);
+        overviewTable.setSelectionMode( ListSelectionModel.SINGLE_SELECTION);
 
-        JScrollPane scrollPane =
-                UIUtils.createScrollPane(
-                        overviewTable);
-        scrollPane.setPreferredSize(
-                new Dimension(0, 200));
+        JScrollPane scrollPane = UIUtils.createScrollPane(overviewTable);
+        scrollPane.setPreferredSize(new Dimension(0, 200));
 
-        tableSection.add(scrollPane,
-                BorderLayout.CENTER);
+        tableSection.add(scrollPane,BorderLayout.CENTER);
 
-        JPanel tableSectionWrapper =
-                new JPanel(new BorderLayout());
+        JPanel tableSectionWrapper =new JPanel(new BorderLayout());
         tableSectionWrapper.setOpaque(false);
-        tableSectionWrapper.add(
-                tableSection,
-                BorderLayout.CENTER);
+        tableSectionWrapper.add( tableSection,BorderLayout.CENTER);
 
         centerContent.add(tableSectionWrapper);
 
-        panel.add(centerContent,
-                BorderLayout.CENTER);
+        panel.add(centerContent,BorderLayout.CENTER);
 
         // Quick actions panel
-        JPanel quickActions =
-                createQuickActionsPanel();
-        panel.add(quickActions,
-                BorderLayout.SOUTH);
+        JPanel quickActions =createQuickActionsPanel();
+        panel.add(quickActions, BorderLayout.SOUTH);
 
         return panel;
     }
@@ -903,66 +830,37 @@ public class CustomerDashboard extends JFrame {
     private JPanel createTransactionsPanel() {
         JPanel panel = new JPanel(
                 new BorderLayout());
-        panel.setBackground(
-                UIConstants.BACKGROUND);
-        panel.setBorder(
-                BorderFactory.createEmptyBorder(
-                        24, 24, 24, 24));
+        panel.setBackground(UIConstants.BACKGROUND);
+        panel.setBorder(BorderFactory.createEmptyBorder(24, 24, 24, 24));
 
-        panel.add(createPageTitle(
-                        "Transaction History",
-                        "View all transactions "
-                                + "across your accounts"),
+        panel.add(createPageTitle( "Transaction History","View all transactions across your accounts"),
                 BorderLayout.NORTH);
 
         // Account selector
-        List<Account> accounts =
-                accountService
-                        .getActiveAccountsForCustomer(
-                                loggedInCustomer
-                                        .getCustomerId());
+        List<Account> accounts =accountService.getActiveAccountsForCustomer(loggedInCustomer.getCustomerId());
 
-        JPanel selectorPanel = new JPanel(
-                new FlowLayout(
-                        FlowLayout.LEFT, 8, 0));
+        JPanel selectorPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
         selectorPanel.setOpaque(false);
-        selectorPanel.setBorder(
-                BorderFactory.createEmptyBorder(
-                        0, 0, 12, 0));
+        selectorPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 12, 0));
 
-        JLabel selectLabel = new JLabel(
-                "Select Account:");
-        selectLabel.setFont(
-                UIConstants.FONT_BODY);
-        selectLabel.setForeground(
-                UIConstants.TEXT_SECONDARY);
+        JLabel selectLabel = new JLabel("Select Account:");
+        selectLabel.setFont(UIConstants.FONT_BODY);
+        selectLabel.setForeground(UIConstants.TEXT_SECONDARY);
 
-        JComboBox<String> accountCombo =
-                UIUtils.createComboBox();
+        JComboBox<String> accountCombo =UIUtils.createComboBox();
         for (Account a : accounts) {
-            accountCombo.addItem(
-                    accountService
-                            .formatAccountNumber(
-                                    a.getAccountId())
-                            + " — "
-                            + a.getAccountType()
-                            .toUpperCase());
+            accountCombo.addItem(accountService.formatAccountNumber(a.getAccountId())
+                            + " — "+ a.getAccountType().toUpperCase());
         }
 
         selectorPanel.add(selectLabel);
         selectorPanel.add(accountCombo);
 
         // Transaction table
-        String[] cols = {"Date",
-                "Type", "Amount",
-                "Balance After",
-                "Description"};
-        DefaultTableModel model =
-                new DefaultTableModel(
-                        cols, 0) {
+        String[] cols = {"Date","Type", "Amount","Balance After","Description"};
+        DefaultTableModel model =new DefaultTableModel(cols, 0) {
                     @Override
-                    public boolean isCellEditable(
-                            int r, int c) {
+                    public boolean isCellEditable(int r, int c) {
                         return false;
                     }
                 };
@@ -972,65 +870,41 @@ public class CustomerDashboard extends JFrame {
 
         // Load transactions for first account
         if (!accounts.isEmpty()) {
-            loadTransactions(model,
-                    accounts.get(0)
-                            .getAccountId());
+            loadTransactions(model,accounts.get(0).getAccountId());
         }
 
         // On account change reload transactions
         accountCombo.addActionListener(e -> {
-            int idx =
-                    accountCombo
-                            .getSelectedIndex();
-            if (idx >= 0
-                    && idx < accounts.size()) {
+            int idx =accountCombo.getSelectedIndex();
+            if (idx >= 0 && idx < accounts.size()) {
                 model.setRowCount(0);
-                loadTransactions(model,
-                        accounts.get(idx)
-                                .getAccountId());
+                loadTransactions(model,accounts.get(idx).getAccountId());
             }
         });
 
-        JScrollPane scroll =
-                UIUtils.createScrollPane(table);
+        JScrollPane scroll =UIUtils.createScrollPane(table);
 
-        JPanel tableCard = createCardPanel(
-                "Transactions");
-        tableCard.setLayout(
-                new BorderLayout());
-        tableCard.setBorder(
-                BorderFactory.createEmptyBorder(
-                        16, 16, 16, 16));
-        tableCard.add(selectorPanel,
-                BorderLayout.NORTH);
-        tableCard.add(scroll,
-                BorderLayout.CENTER);
+        JPanel tableCard = createCardPanel("Transactions");
+        tableCard.setLayout(new BorderLayout());
+        tableCard.setBorder(BorderFactory.createEmptyBorder(16, 16, 16, 16));
+        tableCard.add(selectorPanel,BorderLayout.NORTH);
+        tableCard.add(scroll,BorderLayout.CENTER);
 
         // Action buttons
-        JPanel actionBar = new JPanel(
-                new FlowLayout(
-                        FlowLayout.LEFT, 8, 12));
+        JPanel actionBar = new JPanel( new FlowLayout(FlowLayout.LEFT, 8, 12));
         actionBar.setOpaque(false);
 
-        JButton depositBtn =
-                UIUtils.createSuccessButton(
-                        "Deposit");
-        depositBtn.addActionListener(
-                e -> showDepositDialog());
+        JButton depositBtn =UIUtils.createSuccessButton("Deposit");
+        depositBtn.addActionListener( e -> showDepositDialog());
 
-        JButton withdrawBtn =
-                UIUtils.createWarningButton(
-                        "Withdraw");
-        withdrawBtn.addActionListener(
-                e -> showWithdrawDialog());
+        JButton withdrawBtn =UIUtils.createWarningButton( "Withdraw");
+        withdrawBtn.addActionListener(e -> showWithdrawDialog());
 
         actionBar.add(depositBtn);
         actionBar.add(withdrawBtn);
-        tableCard.add(actionBar,
-                BorderLayout.SOUTH);
+        tableCard.add(actionBar,BorderLayout.SOUTH);
 
-        panel.add(tableCard,
-                BorderLayout.CENTER);
+        panel.add(tableCard,BorderLayout.CENTER);
 
         return panel;
     }

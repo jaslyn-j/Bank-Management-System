@@ -15,12 +15,9 @@ public class CardExpiryStatusDAO {
         this.connection = DBConnection.getInstance().getConnection();
     }
 
-    // Retrieve all active cards for a branch
-    // with their expiry status
     public List<CardExpiryStatus> getAllCardExpiryStatus(int branchId) {
         List<CardExpiryStatus> results = new ArrayList<>();
-        String sql = "SELECT * FROM vw_card_expiry_status " +
-                "WHERE branch_id = ? " +
+        String sql = "SELECT * FROM vw_card_expiry_status WHERE branch_id = ? " +
                 "ORDER BY expiry_date ASC";
 
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
@@ -39,14 +36,9 @@ public class CardExpiryStatusDAO {
         return results;
     }
 
-    // Retrieve only cards that are expired or expiring soon
-    // Excludes cards with 'Valid' status
     public List<CardExpiryStatus> getExpiringCards(int branchId) {
         List<CardExpiryStatus> results = new ArrayList<>();
-        String sql = "SELECT * FROM vw_card_expiry_status " +
-                "WHERE branch_id = ? " +
-                "AND expiry_status != 'Valid' " +
-                "ORDER BY expiry_date ASC";
+        String sql = "SELECT * FROM vw_card_expiry_status WHERE branch_id = ? AND expiry_status != 'Valid' ORDER BY expiry_date ASC";
 
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, branchId);
@@ -64,13 +56,9 @@ public class CardExpiryStatusDAO {
         return results;
     }
 
-    // Retrieve only cards that have already expired
     public List<CardExpiryStatus> getExpiredCards(int branchId) {
         List<CardExpiryStatus> results = new ArrayList<>();
-        String sql = "SELECT * FROM vw_card_expiry_status " +
-                "WHERE branch_id = ? " +
-                "AND expiry_status = 'Expired' " +
-                "ORDER BY expiry_date ASC";
+        String sql = "SELECT * FROM vw_card_expiry_status WHERE branch_id = ? AND expiry_status = 'Expired' ORDER BY expiry_date ASC";
 
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, branchId);
@@ -88,16 +76,12 @@ public class CardExpiryStatusDAO {
         return results;
     }
 
-    // Retrieve cards expiring within a specific number of days
     public List<CardExpiryStatus> getCardsExpiringWithinDays(
             int branchId, int days) {
 
         List<CardExpiryStatus> results = new ArrayList<>();
-        String sql = "SELECT * FROM vw_card_expiry_status " +
-                "WHERE branch_id = ? " +
-                "AND expiry_date BETWEEN CURRENT_DATE " +
-                "AND DATE_ADD(CURRENT_DATE, INTERVAL ? DAY) " +
-                "ORDER BY expiry_date ASC";
+        String sql = "SELECT * FROM vw_card_expiry_status WHERE branch_id = ? " +
+                "AND expiry_date BETWEEN CURRENT_DATE AND DATE_ADD(CURRENT_DATE, INTERVAL ? DAY) ORDER BY expiry_date ASC";
 
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, branchId);
@@ -116,14 +100,10 @@ public class CardExpiryStatusDAO {
         return results;
     }
 
-    // Count cards grouped by expiry status for a branch
     public List<Object[]> getExpiryStatusCounts(int branchId) {
         List<Object[]> results = new ArrayList<>();
-        String sql = "SELECT expiry_status, COUNT(*) AS total " +
-                "FROM vw_card_expiry_status " +
-                "WHERE branch_id = ? " +
-                "GROUP BY expiry_status " +
-                "ORDER BY total DESC";
+        String sql = "SELECT expiry_status, COUNT(*) AS total FROM vw_card_expiry_status " +
+                "WHERE branch_id = ? GROUP BY expiry_status ORDER BY total DESC";
 
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, branchId);
@@ -144,10 +124,8 @@ public class CardExpiryStatusDAO {
         return results;
     }
 
-    // Get expiry status for a specific card
     public CardExpiryStatus getByCardId(int cardId) {
-        String sql = "SELECT * FROM vw_card_expiry_status " +
-                "WHERE card_id = ?";
+        String sql = "SELECT * FROM vw_card_expiry_status WHERE card_id = ?";
 
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, cardId);
@@ -165,7 +143,6 @@ public class CardExpiryStatusDAO {
         return null;
     }
 
-    // Maps a ResultSet row to a CardExpiryStatus object
     private CardExpiryStatus mapResultSet(ResultSet rs)
             throws SQLException {
 

@@ -15,7 +15,6 @@ public class CardDAO {
         this.connection = DBConnection.getInstance().getConnection();
     }
 
-    // Retrieve all cards linked to a specific account
     public List<Card> getCardsByAccount(int accountId) {
         List<Card> cards = new ArrayList<>();
         String sql = "SELECT * FROM Card WHERE account_id = ?";
@@ -35,7 +34,6 @@ public class CardDAO {
         return cards;
     }
 
-    // Retrieve all pending card applications for a branch (used by admin)
     public List<Card> getPendingCardsByBranch(int branchId) {
         List<Card> cards = new ArrayList<>();
         String sql = "SELECT c.* FROM Card c " +
@@ -57,12 +55,9 @@ public class CardDAO {
         return cards;
     }
 
-    // Retrieve all cards for a branch (used by admin to manage all cards)
     public List<Card> getAllCardsByBranch(int branchId) {
         List<Card> cards = new ArrayList<>();
-        String sql = "SELECT c.* FROM Card c " +
-                "JOIN Account a ON c.account_id = a.account_id " +
-                "WHERE a.branch_id = ?";
+        String sql = "SELECT c.* FROM Card c JOIN Account a ON c.account_id = a.account_id WHERE a.branch_id = ?";
 
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, branchId);
@@ -79,7 +74,6 @@ public class CardDAO {
         return cards;
     }
 
-    // Insert a new card application
     public boolean applyForCard(Card card) {
         String sql = "INSERT INTO Card (account_id, card_type, card_number, cvv_hash, expiry_date, status) VALUES (?, ?, ?, ?, ?, 'pending')";
 
@@ -99,7 +93,6 @@ public class CardDAO {
         return false;
     }
 
-    // Approve a card application
     public boolean approveCard(int cardId, int managerId) {
         String sql = "UPDATE Card SET status = 'active', approved_by = ? WHERE card_id = ?";
 
@@ -116,7 +109,6 @@ public class CardDAO {
         return false;
     }
 
-    // Decline a card application
     public boolean declineCard(int cardId, int managerId) {
         String sql = "UPDATE Card SET status = 'cancelled', approved_by = ? WHERE card_id = ?";
 
@@ -133,7 +125,6 @@ public class CardDAO {
         return false;
     }
 
-    // Update card status — used for blocking and unblocking
     public boolean updateCardStatus(int cardId, String status) {
         String sql = "UPDATE Card SET status = ? WHERE card_id = ?";
 
@@ -150,7 +141,6 @@ public class CardDAO {
         return false;
     }
 
-    // Maps a ResultSet row to a Card object
     private Card mapResultSetToCard(ResultSet rs) throws SQLException {
         Card card = new Card();
         card.setCardId(rs.getInt("card_id"));

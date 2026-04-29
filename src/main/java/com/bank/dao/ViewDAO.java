@@ -16,8 +16,6 @@ public class ViewDAO {
         this.connection = DBConnection.getInstance().getConnection();
     }
 
-    //Queries vw_account_balance_overview
-    //Returns accounts categorised by balance tier
     public List<Map<String, Object>> getAccountBalanceOverview(int branchId) {
         return queryView(
                 "SELECT * FROM vw_account_balance_overview WHERE branch_id = ?",
@@ -26,8 +24,6 @@ public class ViewDAO {
         );
     }
 
-    // Queries vw_card_expiry_status
-    // Returns only cards that are expired or expiring soon
     public List<Map<String, Object>> getExpiringCards(int branchId) {
         List<Map<String, Object>> results = new ArrayList<>();
         String sql = "SELECT * FROM vw_card_expiry_status " +
@@ -82,8 +78,6 @@ public class ViewDAO {
         return null;
     }
 
-    // Internal helper to avoid repeating the same
-    // ResultSet reading logic across every method
     private List<Map<String, Object>> queryView(String sql, int branchId, String errorMessage) {
 
         List<Map<String, Object>> results = new ArrayList<>();

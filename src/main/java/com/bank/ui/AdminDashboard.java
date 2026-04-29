@@ -359,7 +359,7 @@ public class AdminDashboard extends JFrame {
         btnCards = createSidebarButton(
                 "Cards", "cards", 0);
         btnFraud = createSidebarButton(
-                "Fraud Alerts", "fraud",
+                "Alerts", "fraud",
                 alertCount);
 
         sidebar.add(btnOverview);
@@ -581,132 +581,65 @@ public class AdminDashboard extends JFrame {
     // OVERVIEW PANEL
     // -------------------------------------------------------
     private JPanel createOverviewPanel() {
-        JPanel panel = new JPanel(
-                new BorderLayout());
-        panel.setBackground(
-                UIConstants.BACKGROUND);
-        panel.setBorder(
-                BorderFactory.createEmptyBorder(
-                        24, 24, 24, 24));
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setBackground(UIConstants.BACKGROUND);
+        panel.setBorder(BorderFactory.createEmptyBorder(24, 24, 24, 24));
 
-        panel.add(createPageTitle(
-                        "Branch Overview",
-                        "Summary of all branch activity"),
-                BorderLayout.NORTH);
+        panel.add(createPageTitle("Branch Overview","Summary of all branch activity"),BorderLayout.NORTH);
 
-        // Get branch activity
-        BranchActivity activity =
-                branchActivityService
-                        .getBranchActivity(branchId);
+        BranchActivity activity =branchActivityService.getBranchActivity(branchId);
 
         // Summary cards
-        JPanel cardsRow = new JPanel(
-                new GridLayout(2, 3, 16, 16));
+        JPanel cardsRow = new JPanel(new GridLayout(2, 3, 16, 16));
         cardsRow.setOpaque(false);
 
         if (activity != null) {
-            cardsRow.add(createSummaryCard(
-                    "Total Customers",
-                    String.valueOf(
-                            activity
-                                    .getTotalCustomers()),
-                    UIConstants.PRIMARY,
-                    UIConstants.GOLD));
-
-            cardsRow.add(createSummaryCard(
-                    "Total Accounts",
-                    String.valueOf(
-                            activity
-                                    .getTotalAccounts()),
+            cardsRow.add(createSummaryCard("Total Customers", String.valueOf(activity.getTotalCustomers()),UIConstants.PRIMARY, UIConstants.GOLD));
+            cardsRow.add(createSummaryCard("Total Accounts",String.valueOf(activity.getTotalAccounts()),
                     UIConstants.SUCCESS,
                     UIConstants.SUCCESS));
 
-            cardsRow.add(createSummaryCard(
-                    "Total Cards",
-                    String.valueOf(
-                            activity.getTotalCards()),
+            cardsRow.add(createSummaryCard("Total Cards", String.valueOf(activity.getTotalCards()),
                     UIConstants.INFO,
                     UIConstants.INFO));
 
-            cardsRow.add(createSummaryCard(
-                    "Total Balance Held",
-                    "$" + String.format(
-                            "%.2f",
-                            activity
-                                    .getTotalBranchBalance()),
+            cardsRow.add(createSummaryCard("Total Balance Held","$" + String.format("%.2f",activity.getTotalBranchBalance()),
                     UIConstants.GOLD_DARK,
                     UIConstants.GOLD_DARK));
 
-            cardsRow.add(createSummaryCard(
-                    "Pending Approvals",
-                    String.valueOf(
-                            activity
-                                    .getTotalPendingItems()),
-                    activity
-                            .getPendingAccounts() > 0
-                            || activity
-                            .getPendingCards() > 0
-                            ? UIConstants.WARNING
-                            : UIConstants.SUCCESS,
-                    activity
-                            .getPendingAccounts() > 0
-                            || activity
-                            .getPendingCards() > 0
-                            ? UIConstants.WARNING
-                            : UIConstants.SUCCESS));
+            cardsRow.add(createSummaryCard("Pending Approvals",
+                    String.valueOf(activity.getTotalPendingItems()),
+                    activity.getPendingAccounts() > 0|| activity.getPendingCards() > 0? UIConstants.WARNING: UIConstants.SUCCESS,
+                    activity.getPendingAccounts() > 0|| activity.getPendingCards() > 0? UIConstants.WARNING: UIConstants.SUCCESS));
 
             cardsRow.add(createSummaryCard(
-                    "Open Fraud Alerts",
-                    String.valueOf(
-                            activity
-                                    .getOpenFraudAlerts()),
-                    activity
-                            .getOpenFraudAlerts() > 0
-                            ? UIConstants.DANGER
-                            : UIConstants.SUCCESS,
-                    activity
-                            .getOpenFraudAlerts() > 0
-                            ? UIConstants.DANGER
-                            : UIConstants.SUCCESS));
+                    "Open Alerts", String.valueOf(activity.getOpenFraudAlerts()),
+                    activity.getOpenFraudAlerts() > 0 ? UIConstants.DANGER : UIConstants.SUCCESS,
+                    activity.getOpenFraudAlerts() > 0? UIConstants.DANGER: UIConstants.SUCCESS));
         }
 
-        JPanel cardsWrapper = new JPanel(
-                new BorderLayout());
+        JPanel cardsWrapper = new JPanel( new BorderLayout());
         cardsWrapper.setOpaque(false);
-        cardsWrapper.setBorder(
-                BorderFactory.createEmptyBorder(
-                        0, 0, 20, 0));
-        cardsWrapper.add(cardsRow,
-                BorderLayout.CENTER);
+        cardsWrapper.setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 0));
+        cardsWrapper.add(cardsRow, BorderLayout.CENTER);
 
         // Quick actions
-        JPanel actionsCard = createCardPanel(
-                "Management Actions");
-        actionsCard.setLayout(
-                new FlowLayout(
-                        FlowLayout.LEFT, 12, 12));
+        JPanel actionsCard = createCardPanel("Management Actions");
+        actionsCard.setLayout( new FlowLayout( FlowLayout.LEFT, 12, 12));
 
-        JButton approvalsBtn =
-                UIUtils.createGoldButton(
-                        "View Approvals");
-        approvalsBtn.addActionListener(e -> {
-            activeMenu = "approvals";
+        JButton approvalsBtn =UIUtils.createGoldButton("View Approvals");
+        approvalsBtn.addActionListener(e -> {activeMenu = "approvals";
             repaintSidebarButtons();
             showPanel("approvals");
         });
 
-        JButton fraudBtn =
-                UIUtils.createDangerButton(
-                        "Fraud Alerts");
-        fraudBtn.addActionListener(e -> {
-            activeMenu = "fraud";
+        JButton fraudBtn =UIUtils.createDangerButton( "Alerts");
+        fraudBtn.addActionListener(e -> {activeMenu = "fraud";
             repaintSidebarButtons();
             showPanel("fraud");
         });
 
-        JButton interestBtn =
-                UIUtils.createPrimaryButton(
-                        "Apply Interest");
+        JButton interestBtn =UIUtils.createPrimaryButton("Apply Interest");
         interestBtn.addActionListener(
                 e -> handleApplyInterest());
 
@@ -1302,8 +1235,8 @@ public class AdminDashboard extends JFrame {
                         24, 24, 24, 24));
 
         panel.add(createPageTitle(
-                        "Fraud Alerts",
-                        "Monitor and review fraud alerts"),
+                        "Alerts",
+                        "Monitor and review alerts"),
                 BorderLayout.NORTH);
 
         List<FraudAlert> alerts =
@@ -1364,7 +1297,7 @@ public class AdminDashboard extends JFrame {
                 .count();
 
         JPanel tableCard = createCardPanel(
-                "Open Fraud Alerts ("
+                "Open Alerts ("
                         + openCount + ")");
         tableCard.setLayout(
                 new BorderLayout());
